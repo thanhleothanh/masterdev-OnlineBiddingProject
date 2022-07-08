@@ -2,9 +2,11 @@ package com.ghtk.onlinebiddingproject.utils.converters;
 
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.ItemDto;
+import com.ghtk.onlinebiddingproject.models.dtos.ProfileDto;
 import com.ghtk.onlinebiddingproject.models.dtos.UserDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.entities.Item;
+import com.ghtk.onlinebiddingproject.models.entities.Profile;
 import com.ghtk.onlinebiddingproject.models.entities.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,17 @@ public class EntityToDtoConverter {
     }
 
     public ItemDto convertToDto(Item item) {
+
         return modelMapper.map(item, ItemDto.class);
     }
 
     public UserDto convertToDto(User user) {
+
         return modelMapper.map(user, UserDto.class);
+    }
+
+    public ProfileDto convertDto(Profile profile){
+        return modelMapper.map(profile, ProfileDto.class);
     }
 
     public List<AuctionDto> convertToListDto(List<Auction> auctions) {
@@ -37,6 +45,7 @@ public class EntityToDtoConverter {
         }
         return listDto;
     }
+
 //
 //    public CategoryDto convertToDto(CategoryEntity categoryEntity) {
 //        return modelMapper.map(categoryEntity, CategoryDto.class);
