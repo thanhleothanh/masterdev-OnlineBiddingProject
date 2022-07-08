@@ -24,7 +24,7 @@ public class ReviewResult extends BaseEntity {
     @Column(name = "result", nullable = false)
     private ReviewResultConstants result;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 

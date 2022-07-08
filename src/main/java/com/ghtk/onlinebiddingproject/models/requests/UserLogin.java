@@ -1,4 +1,4 @@
-package com.ghtk.onlinebiddingproject.models.dtos;
+package com.ghtk.onlinebiddingproject.models.requests;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

@@ -24,6 +24,10 @@ public class Winner {
     @JoinColumn(name = "bid_id", nullable = false)
     private Bid bid;
 
+    @OneToOne
+    @JoinColumn(name = "auction_id", nullable = false)
+    private Auction auction;
+
     public Winner(Integer id) {
         this.id = id;
     }

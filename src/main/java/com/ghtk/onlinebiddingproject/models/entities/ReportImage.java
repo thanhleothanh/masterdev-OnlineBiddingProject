@@ -23,7 +23,7 @@ public class ReportImage {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false)
     private Report report;
 }

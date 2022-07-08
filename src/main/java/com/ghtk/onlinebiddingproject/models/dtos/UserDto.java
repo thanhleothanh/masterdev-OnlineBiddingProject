@@ -9,4 +9,6 @@ import javax.validation.constraints.NotNull;
 public class UserDto {
     @NotNull(message = "thiếu thông tin tài khoản!")
     private Integer id;
+
+    private ProfileDto profile;
 }

@@ -1,6 +1,8 @@
 package com.ghtk.onlinebiddingproject.exceptions;
 
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +56,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         e.printStackTrace();
         List<String> errors = new ArrayList<>();
         errors.add(e.getLocalizedMessage());
-        CommonResponse errorResponse = new CommonResponse(false, "Bad credentials! Kiểm tra lại username và password!", null, errors);
+        CommonResponse errorResponse = new CommonResponse(false, "Bad credentials! Tài khoản hoặc mật khẩu không đúng!", null, errors);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = {DataIntegrityViolationException.class})
+    public ResponseEntity<Object> handlerSQLException(RuntimeException e, WebRequest request) {
+        e.printStackTrace();
+        List<String> errors = new ArrayList<>();
+        errors.add(e.getLocalizedMessage());
+        CommonResponse errorResponse = new CommonResponse(false, "Bad request, some properties can not be null!", null, errors);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -73,6 +85,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     public ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        e.printStackTrace();
+        List<String> errors = new ArrayList<>();
+        errors.add(e.getLocalizedMessage());
+        CommonResponse errorResponse = new CommonResponse(false, "Bad request!", null, errors);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public ResponseEntity<Object> handleTypeMismatch(TypeMismatchException e, HttpHeaders headers, HttpStatus status, WebRequest request) {
         e.printStackTrace();
         List<String> errors = new ArrayList<>();
         errors.add(e.getLocalizedMessage());

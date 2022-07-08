@@ -1,5 +1,6 @@
 package com.ghtk.onlinebiddingproject.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,6 @@ public class ReportImageDto {
     @NotBlank(message = "thiếu thông tin url ảnh!")
     private String imageUrl;
 
-    @NotNull(message = "thiếu thông tin phiếu báo cáo!")
+    @JsonIgnore
     private ReportDto report;
 }

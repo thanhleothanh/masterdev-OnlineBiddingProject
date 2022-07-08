@@ -1,10 +1,9 @@
 package com.ghtk.onlinebiddingproject.models.responses;
 
+import com.ghtk.onlinebiddingproject.constants.UserStatusConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,5 +12,7 @@ public class UserAuthResponse {
     private Integer id;
     private String username;
     private String name;
-    private List<Object> roles;
+    private String email;
+    private String imageUrl;
+    private UserStatusConstants status;
 }

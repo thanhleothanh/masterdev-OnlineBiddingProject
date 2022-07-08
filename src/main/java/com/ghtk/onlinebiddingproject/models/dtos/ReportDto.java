@@ -1,9 +1,11 @@
 package com.ghtk.onlinebiddingproject.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 public class ReportDto {
@@ -18,5 +20,10 @@ public class ReportDto {
     @NotNull(message = "thiếu thông tin người bị báo cáo!")
     private UserDto userReported;
 
+    @JsonIgnore
     private AuctionDto auction;
+
+    private ReportResultDto reportResult;
+
+    private List<ReportImageDto> reportImages;
 }

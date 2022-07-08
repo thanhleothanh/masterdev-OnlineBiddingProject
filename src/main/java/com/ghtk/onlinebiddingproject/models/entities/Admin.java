@@ -22,4 +22,8 @@ public class Admin {
     @OneToOne
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
+
+    public Admin(Integer id) {
+        this.id = id;
+    }
 }

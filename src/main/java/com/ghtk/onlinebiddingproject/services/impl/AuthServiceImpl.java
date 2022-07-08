@@ -1,27 +1,27 @@
 package com.ghtk.onlinebiddingproject.services.impl;
 
 import com.ghtk.onlinebiddingproject.exceptions.BadRequestException;
-import com.ghtk.onlinebiddingproject.models.dtos.UserLogin;
-import com.ghtk.onlinebiddingproject.models.dtos.UserSignup;
 import com.ghtk.onlinebiddingproject.models.entities.Profile;
 import com.ghtk.onlinebiddingproject.models.entities.Role;
-import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
+import com.ghtk.onlinebiddingproject.models.requests.UserChangePassword;
+import com.ghtk.onlinebiddingproject.models.requests.UserLogin;
+import com.ghtk.onlinebiddingproject.models.requests.UserSignup;
 import com.ghtk.onlinebiddingproject.models.responses.UserAuthResponse;
 import com.ghtk.onlinebiddingproject.repositories.ProfileRepository;
 import com.ghtk.onlinebiddingproject.repositories.RoleRepository;
 import com.ghtk.onlinebiddingproject.security.UserDetailsImpl;
 import com.ghtk.onlinebiddingproject.services.AuthService;
+import com.ghtk.onlinebiddingproject.utils.CurrentUserUtils;
 import com.ghtk.onlinebiddingproject.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private ProfileRepository userInfoRepository;
+    private ProfileRepository profileRepository;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -42,32 +42,45 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtils jwtUtils;
 
     @Override
-    public CommonResponse login(UserLogin loginRequest) {
+    public UserAuthResponse login(UserLogin loginRequest) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        CurrentUserUtils.setCurrentUserDetails(authentication);
+        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
 
-        UserAuthResponse userLoginResponse = new UserAuthResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getName(), List.of(userDetails.getAuthorities()));
-        return new CommonResponse(true, "Đăng nhập thành công!", userLoginResponse, null);
+        return new UserAuthResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getName(), userDetails.getEmail(), userDetails.getImageUrl(), userDetails.getStatus());
     }
 
     @Override
-    public CommonResponse signUp(UserSignup signupRequest) {
-        if (userInfoRepository.existsByUsername(signupRequest.getUsername())) {
+    public UserAuthResponse signUp(UserSignup signupRequest) {
+        if (profileRepository.existsByUsername(signupRequest.getUsername())) {
             throw new BadRequestException("Username đã được sử dụng!");
         }
+        if (signupRequest.getRole().getId().equals(1)) {
+            throw new AccessDeniedException("Không được phép tạo tài khoản admin!");
+        }
         Role userRole = roleRepository.findById(signupRequest.getRole().getId()).get();
-        Profile newUser = userInfoRepository.save(new Profile(signupRequest.getUsername(),
+        Profile newUser = profileRepository.save(new Profile(signupRequest.getUsername(),
                 encoder.encode(signupRequest.getPassword()), signupRequest.getName(), userRole));
 
-        if (userRole.getId() == 1) userInfoRepository.insertAdmin(newUser.getId());
-        else userInfoRepository.insertUser(newUser.getId());
+        if (userRole.getId() == 1) profileRepository.insertAdmin(newUser.getId());
+        else profileRepository.insertUser(newUser.getId());
 
-        UserAuthResponse userRegisterResponse = new UserAuthResponse(newUser.getId(), newUser.getUsername(), newUser.getName(), List.of(newUser.getRole()));
-        return new CommonResponse(true, "Đăng ký thành công!", userRegisterResponse, null);
+        return new UserAuthResponse(newUser.getId(), newUser.getUsername(), newUser.getName(), newUser.getEmail(), newUser.getImageUrl(), newUser.getStatus());
     }
 
+    @Override
+    public void changeMyPassword(UserChangePassword userChangePassword) {
+        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userChangePassword.getCurrentPassword()));
+        if (!userChangePassword.getNewPassword().equals(userChangePassword.getNewPasswordConfirm())) {
+            throw new BadRequestException("Xác nhận lại mật khẩu mới!");
+        }
+        Profile profile = profileRepository.findById(userDetails.getId()).get();
+        profile.setPassword(encoder.encode(userChangePassword.getNewPassword()));
+        profileRepository.save(profile);
+    }
 
     @Override
     public ResponseCookie generateJwtCookie() {
