@@ -27,7 +27,7 @@ public class Bid extends BaseEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "profile_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 }

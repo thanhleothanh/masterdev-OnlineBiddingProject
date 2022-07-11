@@ -1,6 +1,6 @@
 package com.ghtk.onlinebiddingproject.security;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ghtk.onlinebiddingproject.constants.UserStatusConstants;
 import com.ghtk.onlinebiddingproject.models.entities.Profile;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,18 +16,22 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
     private Integer id;
     private String username;
-    private String name;
-
-    @JsonIgnore
     private String password;
+    private String name;
+    private String email;
+    private String imageUrl;
+    private UserStatusConstants status;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Integer id, String username, String password, String name,
+    public UserDetailsImpl(Integer id, String username, String password, String name, String email, String imageUrl, UserStatusConstants status,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.name = name;
+        this.email = email;
+        this.imageUrl = imageUrl;
+        this.status = status;
         this.authorities = authorities;
     }
 
@@ -38,8 +42,16 @@ public class UserDetailsImpl implements UserDetails {
                 profile.getId(),
                 profile.getUsername(),
                 profile.getPassword(),
-                profile.getName(), authorities);
+                profile.getName(),
+                profile.getEmail(),
+                profile.getImageUrl(),
+                profile.getStatus(),
+                authorities);
 
+    }
+
+    public boolean isSuspended() {
+        return this.status.equals(UserStatusConstants.SUSPENDED);
     }
 
     @Override
@@ -64,7 +76,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !this.status.equals(UserStatusConstants.BANNED);
     }
 
     @Override

@@ -24,11 +24,17 @@ public class ReviewResult extends BaseEntity {
     @Column(name = "result", nullable = false)
     private ReviewResultConstants result;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 
     @ManyToOne
     @JoinColumn(name = "admin_id", referencedColumnName = "profile_id", nullable = false)
     private Admin admin;
+
+    public ReviewResult(ReviewResultConstants result, Auction auction, Admin admin) {
+        this.result = result;
+        this.auction = auction;
+        this.admin = admin;
+    }
 }

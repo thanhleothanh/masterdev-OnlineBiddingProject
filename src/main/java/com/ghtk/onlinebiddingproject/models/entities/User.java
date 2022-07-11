@@ -19,7 +19,7 @@ public class User {
     @Column(name = "profile_id")
     private Integer id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
 

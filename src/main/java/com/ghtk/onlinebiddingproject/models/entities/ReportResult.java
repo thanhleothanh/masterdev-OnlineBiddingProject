@@ -24,7 +24,7 @@ public class ReportResult extends BaseEntity {
     @Column(name = "result", nullable = false)
     private ReportResultConstants result;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false)
     private Report report;
 

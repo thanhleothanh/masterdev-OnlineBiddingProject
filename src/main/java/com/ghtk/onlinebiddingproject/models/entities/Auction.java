@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -22,7 +23,7 @@ public class Auction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = true)
     private String description;
 
     @Column(name = "time_start", nullable = false)
@@ -47,16 +48,28 @@ public class Auction extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "item_id", nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = true)
+    private Category category;
+
+    @OneToOne(mappedBy = "auction")
     private Item item;
 
-    @OneToOne
-    @JoinColumn(name = "winner_id", nullable = true)
+    @OneToOne(mappedBy = "auction")
     private Winner winner;
+
+    @OneToOne(mappedBy = "auction", fetch = FetchType.LAZY)
+    private ReviewResult reviewResult;
+
+    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
+    private List<Bid> bids;
 
     @PrePersist
     public void prePersist() {
         this.status = AuctionStatusConstants.valueOf("DRAFT");
+    }
+
+    public Auction(Integer id) {
+        this.id = id;
     }
 }

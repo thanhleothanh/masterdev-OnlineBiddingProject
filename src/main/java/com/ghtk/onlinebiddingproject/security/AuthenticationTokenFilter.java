@@ -1,12 +1,12 @@
 package com.ghtk.onlinebiddingproject.security;
 
+import com.ghtk.onlinebiddingproject.constants.UserStatusConstants;
 import com.ghtk.onlinebiddingproject.utils.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
@@ -30,8 +31,10 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             String jwt = jwtUtils.getJwtFromCookies(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
+                UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+                if (userDetails.getStatus().equals(UserStatusConstants.BANNED)) {
+                    throw new AccessDeniedException("Tài khoản của bạn đã bị khoá!");
+                }
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails,
                                 null,

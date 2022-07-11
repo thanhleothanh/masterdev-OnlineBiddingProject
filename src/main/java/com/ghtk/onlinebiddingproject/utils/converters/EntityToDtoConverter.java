@@ -1,13 +1,7 @@
 package com.ghtk.onlinebiddingproject.utils.converters;
 
-import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
-import com.ghtk.onlinebiddingproject.models.dtos.ItemDto;
-import com.ghtk.onlinebiddingproject.models.dtos.ProfileDto;
-import com.ghtk.onlinebiddingproject.models.dtos.UserDto;
-import com.ghtk.onlinebiddingproject.models.entities.Auction;
-import com.ghtk.onlinebiddingproject.models.entities.Item;
-import com.ghtk.onlinebiddingproject.models.entities.Profile;
-import com.ghtk.onlinebiddingproject.models.entities.User;
+import com.ghtk.onlinebiddingproject.models.dtos.*;
+import com.ghtk.onlinebiddingproject.models.entities.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,20 +19,38 @@ public class EntityToDtoConverter {
     }
 
     public ItemDto convertToDto(Item item) {
-
         return modelMapper.map(item, ItemDto.class);
     }
 
-    public UserDto convertToDto(User user) {
+    public ItemImageDto convertToDto(ItemImage itemImage) {
+        return modelMapper.map(itemImage, ItemImageDto.class);
+    }
 
+    public ReportImageDto convertToDto(ReportImage reportImage) {
+        return modelMapper.map(reportImage, ReportImageDto.class);
+    }
+
+    public ReportDto convertToDto(Report report) {
+        return modelMapper.map(report, ReportDto.class);
+    }
+
+    public ReportResultDto convertToDto(ReportResult reportResult) {
+        return modelMapper.map(reportResult, ReportResultDto.class);
+    }
+
+    public BidDto convertToBidDto(Bid bid) {
+        return modelMapper.map(bid, BidDto.class);
+    }
+
+    public UserDto convertToDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }
 
-    public ProfileDto convertDto(Profile profile){
+    public ProfileDto convertToDto(Profile profile) {
         return modelMapper.map(profile, ProfileDto.class);
     }
 
-    public List<AuctionDto> convertToListDto(List<Auction> auctions) {
+    public List<AuctionDto> convertToListAuctionDto(List<Auction> auctions) {
         List<AuctionDto> listDto = new ArrayList<>();
         for (Auction auction : auctions) {
             listDto.add(modelMapper.map(auction, AuctionDto.class));
@@ -46,52 +58,27 @@ public class EntityToDtoConverter {
         return listDto;
     }
 
-//
-//    public CategoryDto convertToDto(CategoryEntity categoryEntity) {
-//        return modelMapper.map(categoryEntity, CategoryDto.class);
-//    }
-//
-//    public List<CategoryDto> convertToListCategoryDto(List<CategoryEntity> categoryEntity) {
-//        List<CategoryDto> listCategoryDto = new ArrayList<>();
-//        for (CategoryEntity category : categoryEntity) {
-//            listCategoryDto.add(modelMapper.map(category, CategoryDto.class));
-//        }
-//        return listCategoryDto;
-//    }
-//
-//    public WarehouseDto convertToDto(WarehouseEntity warehouseEntity) {
-//        return modelMapper.map(warehouseEntity, WarehouseDto.class);
-//    }
-//
-//    public List<WarehouseDto> convertToListWarehouseDto(List<WarehouseEntity> warehouseEntity) {
-//        List<WarehouseDto> listWarehouseDto = new ArrayList<>();
-//        for (WarehouseEntity warehouse : warehouseEntity) {
-//            listWarehouseDto.add(modelMapper.map(warehouse, WarehouseDto.class));
-//        }
-//        return listWarehouseDto;
-//    }
-//
-//    public ProvinceDto convertToDto(ProvinceEntity provinceEntity) {
-//        return modelMapper.map(provinceEntity, ProvinceDto.class);
-//    }
-//
-//    public List<ProvinceDto> convertToListProvinceDto(List<ProvinceEntity> provinceEntity) {
-//        List<ProvinceDto> listProvinceDto = new ArrayList<>();
-//        for (ProvinceEntity province : provinceEntity) {
-//            listProvinceDto.add(modelMapper.map(province, ProvinceDto.class));
-//        }
-//        return listProvinceDto;
-//    }
-//
-//    public DistrictDto convertToDto(DistrictEntity districtEntity) {
-//        return modelMapper.map(districtEntity, DistrictDto.class);
-//    }
-//
-//    public List<DistrictDto> convertToListDistrictDto(List<DistrictEntity> districtEntity) {
-//        List<DistrictDto> listDistrictDto = new ArrayList<>();
-//        for (DistrictEntity district : districtEntity) {
-//            listDistrictDto.add(modelMapper.map(district, DistrictDto.class));
-//        }
-//        return listDistrictDto;
-//    }
+    public List<BidDto> convertToListBidDto(List<Bid> bids) {
+        List<BidDto> listDto = new ArrayList<>();
+        for (Bid bid : bids) {
+            listDto.add(modelMapper.map(bid, BidDto.class));
+        }
+        return listDto;
+    }
+
+    public List<ReportDto> convertToListReportDto(List<Report> reports) {
+        List<ReportDto> listDto = new ArrayList<>();
+        for (Report report : reports) {
+            listDto.add(modelMapper.map(report, ReportDto.class));
+        }
+        return listDto;
+    }
+
+    public List<CategoryDto> convertToListCategoryDto(List<Category> categories) {
+        List<CategoryDto> listDto = new ArrayList<>();
+        for (Category category : categories) {
+            listDto.add(modelMapper.map(category, CategoryDto.class));
+        }
+        return listDto;
+    }
 }

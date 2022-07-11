@@ -1,5 +1,6 @@
-package com.ghtk.onlinebiddingproject.models.dtos;
+package com.ghtk.onlinebiddingproject.models.requests;
 
+import com.ghtk.onlinebiddingproject.models.dtos.RoleDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
