@@ -1,13 +1,17 @@
 package com.ghtk.onlinebiddingproject.services.impl;
 
 import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
+import com.ghtk.onlinebiddingproject.constants.ReviewResultConstants;
 import com.ghtk.onlinebiddingproject.exceptions.BadRequestException;
 import com.ghtk.onlinebiddingproject.exceptions.NotFoundException;
+import com.ghtk.onlinebiddingproject.models.entities.Admin;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
+import com.ghtk.onlinebiddingproject.models.entities.ReviewResult;
 import com.ghtk.onlinebiddingproject.models.entities.User;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.repositories.AuctionRepository;
+import com.ghtk.onlinebiddingproject.repositories.ReviewResultRepository;
 import com.ghtk.onlinebiddingproject.security.UserDetailsImpl;
 import com.ghtk.onlinebiddingproject.services.AuctionService;
 import com.ghtk.onlinebiddingproject.utils.CurrentUserUtils;
@@ -31,6 +35,8 @@ import java.util.List;
 public class AuctionServiceImpl implements AuctionService {
     @Autowired
     private AuctionRepository auctionRepository;
+    @Autowired
+    private ReviewResultRepository reviewResultRepository;
 
     @Override
     public AuctionPagingResponse get(Specification<Auction> spec, HttpHeaders headers, Sort sort) {
@@ -103,7 +109,7 @@ public class AuctionServiceImpl implements AuctionService {
         if (currentStatus.equals(AuctionStatusConstants.DRAFT)) {
             DtoToEntityUtils.copyNonNullProperties(auctionDto, auction);
             return auctionRepository.save(auction);
-        } else throw new AccessDeniedException("Không thể thực hiện sửa bài đấu giá khi đã và đang đấu giá!");
+        } else throw new AccessDeniedException("Không thể thực hiện sửa bài đấu giá khi đã và đang (chờ) đấu giá!");
     }
 
     @Override
@@ -156,6 +162,11 @@ public class AuctionServiceImpl implements AuctionService {
     public Auction adminReviewSubmit(Auction auction) {
         AuctionStatusConstants currentStatus = auction.getStatus();
         if (currentStatus.equals(AuctionStatusConstants.PENDING)) {
+            UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
+            Admin admin = new Admin(userDetails.getId());
+            ReviewResult reviewResult = new ReviewResult(ReviewResultConstants.ACCEPTED, auction, admin);
+            reviewResultRepository.save(reviewResult);
+
             auction.setStatus(AuctionStatusConstants.QUEUED);
             return auctionRepository.save(auction);
         }
