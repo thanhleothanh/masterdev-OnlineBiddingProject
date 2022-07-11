@@ -20,6 +20,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
+import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -62,8 +63,10 @@ public class AuctionController {
      * */
     @GetMapping("")
     public ResponseEntity<CommonResponse> get(
+            @Join(path = "category", alias = "c")
             @And({
                     @Spec(path = "status", params = "status", spec = Equal.class, constVal = "OPENING"),
+                    @Spec(path = "c.id", params = "categoryId", spec = Equal.class),
                     @Spec(path = "priceStart", params = "priceStartGt", spec = GreaterThan.class),
                     @Spec(path = "priceStart", params = "priceStartLt", spec = LessThan.class),
                     @Spec(path = "timeStart", params = "timeStartGt", spec = GreaterThan.class),

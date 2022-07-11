@@ -31,4 +31,10 @@ public class ReviewResult extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "admin_id", referencedColumnName = "profile_id", nullable = false)
     private Admin admin;
+
+    public ReviewResult(ReviewResultConstants result, Auction auction, Admin admin) {
+        this.result = result;
+        this.auction = auction;
+        this.admin = admin;
+    }
 }

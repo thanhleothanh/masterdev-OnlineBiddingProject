@@ -68,8 +68,16 @@ public class EntityToDtoConverter {
 
     public List<ReportDto> convertToListReportDto(List<Report> reports) {
         List<ReportDto> listDto = new ArrayList<>();
-        for (Report bid : reports) {
-            listDto.add(modelMapper.map(bid, ReportDto.class));
+        for (Report report : reports) {
+            listDto.add(modelMapper.map(report, ReportDto.class));
+        }
+        return listDto;
+    }
+
+    public List<CategoryDto> convertToListCategoryDto(List<Category> categories) {
+        List<CategoryDto> listDto = new ArrayList<>();
+        for (Category category : categories) {
+            listDto.add(modelMapper.map(category, CategoryDto.class));
         }
         return listDto;
     }
