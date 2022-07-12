@@ -30,6 +30,8 @@ public class BidServiceImpl implements BidService {
     private AuctionRepository auctionRepository;
     @Autowired
     private AuctionUserServiceImpl auctionUserService;
+    @Autowired
+    private WebSocketServiceImpl webSocketService;
 
 
     @Override
@@ -67,7 +69,6 @@ public class BidServiceImpl implements BidService {
         if (bidDto.getPrice() - auction.getHighestPrice() < auction.getPriceStep()) {
             throw new BadRequestException("Giá mới phải cao hơn giá cao nhất hiện tại + bước giá!");
         }
-
 
         auction.setHighestPrice(bidDto.getPrice());
         auctionRepository.save(auction);

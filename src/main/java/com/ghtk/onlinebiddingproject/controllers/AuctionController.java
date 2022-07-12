@@ -12,6 +12,7 @@ import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
 import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
 import com.ghtk.onlinebiddingproject.services.impl.AuctionUserServiceImpl;
 import com.ghtk.onlinebiddingproject.services.impl.BidServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.WebSocketServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
@@ -43,6 +44,8 @@ import java.util.List;
 @Slf4j
 @RequestMapping(path = "api/v1/auctions")
 public class AuctionController {
+    @Autowired
+    private WebSocketServiceImpl webSocketService;
     @Autowired
     private AuctionServiceImpl auctionService;
     @Autowired
@@ -99,7 +102,7 @@ public class AuctionController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getById(@PathVariable(value = "id") Integer id) {
         AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.getById(id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
@@ -152,8 +155,8 @@ public class AuctionController {
     @GetMapping("/{id}/bids")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getBidsByAuctionId(@PathVariable(value = "id") Integer id) {
+        auctionService.getById(id);
         List<Bid> bids = bidService.getBidsByAuctionId(id);
-
         List<BidDto> dtoResponse = entityToDtoConverter.convertToListBidDto(bids);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -163,9 +166,9 @@ public class AuctionController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> saveBid(@PathVariable(value = "id") Integer id, @Validated @RequestBody BidRequestDto bidDto) {
         Bid bid = dtoToEntityConverter.convertToEntity(bidDto);
-
         BidDto dtoResponse = entityToDtoConverter.convertToBidDto(bidService.saveBid(id, bidDto, bid));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
+        webSocketService.sendBid(id, response);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

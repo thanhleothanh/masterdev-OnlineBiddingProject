@@ -48,5 +48,9 @@ public class DtoToEntityConverter {
         return modelMapper.map(bidDto, Bid.class);
     }
 
+    public Bid convertToEntity(BidDto bidDto) throws ParseException {
+        return modelMapper.map(bidDto, Bid.class);
+    }
+
 
 }
