@@ -67,7 +67,8 @@ public class AuctionServiceImpl implements AuctionService {
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy auction với id này!"));
         boolean isPostedByCurrentUser = CurrentUserUtils.isPostedByCurrentUser(auction.getUser().getId());
 
-        if (!auction.getStatus().equals(AuctionStatusConstants.DRAFT) || isPostedByCurrentUser)
+        if (!auction.getStatus().equals(AuctionStatusConstants.DRAFT) || isPostedByCurrentUser ||
+        !auction.getStatus().equals(AuctionStatusConstants.PENDING))
             return auction;
         else throw new AccessDeniedException("Không thể lấy thông tin của bài đấu giá vào lúc này!");
     }
@@ -102,11 +103,17 @@ public class AuctionServiceImpl implements AuctionService {
         AuctionStatusConstants currentStatus = auction.getStatus();
         AuctionStatusConstants newStatus = auctionDto.getStatus();
 
+        if(auctionDto.getTimeStart().isBefore(auction.getTimeStart()))
+            throw new BadRequestException("cập nhật thời gian bắt đầu không hợp lệ");
+        if(auctionDto.getTimeEnd().isBefore(auction.getTimeEnd()))
+            throw new BadRequestException("cập nhật thời gian kết thúc không hợp lệ");
+        if (auctionDto.getTimeEnd().isBefore(auctionDto.getTimeStart()))
+            throw new BadRequestException("Thời gian bắt đầu và kết thúc đấu giá không hợp lệ!");
         if (!isPostedByCurrentUser)
             throw new AccessDeniedException("Chỉ admin và chủ bài đấu giá mới có quyền sửa!");
         if (newStatus != null)
             throw new BadRequestException("Không thể tự ý thay đổi trạng thái bài đấu giá!");
-        if (currentStatus.equals(AuctionStatusConstants.DRAFT)) {
+        if (currentStatus.equals(AuctionStatusConstants.DRAFT) || currentStatus.equals(AuctionStatusConstants.PENDING)) {
             DtoToEntityUtils.copyNonNullProperties(auctionDto, auction);
             return auctionRepository.save(auction);
         } else throw new AccessDeniedException("Không thể thực hiện sửa bài đấu giá khi đã và đang (chờ) đấu giá!");
