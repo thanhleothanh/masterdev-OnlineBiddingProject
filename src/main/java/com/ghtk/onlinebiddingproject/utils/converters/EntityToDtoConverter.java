@@ -2,6 +2,8 @@ package com.ghtk.onlinebiddingproject.utils.converters;
 
 import com.ghtk.onlinebiddingproject.models.dtos.*;
 import com.ghtk.onlinebiddingproject.models.entities.*;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponseDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,6 +50,10 @@ public class EntityToDtoConverter {
 
     public ProfileDto convertToDto(Profile profile) {
         return modelMapper.map(profile, ProfileDto.class);
+    }
+
+    public AuctionPagingResponseDto convertToDto(AuctionPagingResponse auctionPagingResponse) {
+        return modelMapper.map(auctionPagingResponse, AuctionPagingResponseDto.class);
     }
 
     public List<AuctionDto> convertToListAuctionDto(List<Auction> auctions) {

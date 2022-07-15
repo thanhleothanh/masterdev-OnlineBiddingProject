@@ -10,13 +10,46 @@
 			"name": "auth",
 			"item": [
 				{
-					"name": "login",
+					"name": "login as admin",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"username\": \"adminadmin\",\r\n\t\t\"password\": \"adminadmin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auth/login",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login as user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"nguoidung1\",\r\n\t\t\"password\": \"123456789\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -82,7 +115,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"adminadmin\",\r\n\t\t\"password\": \"adminadmin\",\r\n\t\t\"name\": \"admin\",\r\n\t\t\"role\": {\r\n\t\t\t\"id\": 1\r\n\t\t}\r\n}",
+							"raw": "{\r\n    \"username\": \"nguoidung\",\r\n\t\t\"password\": \"nguoidung\",\r\n\t\t\"name\": \"thanhthanh\",\r\n\t\t\"role\": {\r\n\t\t\t\"id\": 2\r\n\t\t}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,10 +144,191 @@
 			]
 		},
 		{
-			"name": "auctions",
+			"name": "user",
 			"item": [
 				{
-					"name": "get all auctions",
+					"name": "put myprofile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\t\"status\": \"ACTIVE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/profiles/myProfile",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"myProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change my password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"12345678\",\r\n\t\t\"newPassword\": \"123456789\",\r\n\t\t\"newPasswordConfirm\": \"123456789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/profiles/myProfile/changePassword",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"myProfile",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get myprofile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/profiles/myProfile",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"myProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get profile by user id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/profiles/9",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get auctions by user id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/profiles/9/auctions",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"profiles",
+								"9",
+								"auctions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "get all auctions (admin)",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -130,7 +344,180 @@
 							}
 						],
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions?",
+							"raw": "127.0.0.1:8080/api/v1/admin/auctions?status=OPENING",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"auctions"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "OPENING"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put auction (admin)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"id\": 24,\r\n\t\"status\": \"PENDING\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/admin/auctions",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"auctions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "admin approve auction (admin)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/admin/auctions/33/approve",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"auctions",
+								"33",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ban profile (admin)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"status\": \"ACTIVE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/admin/profiles/6",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"profiles",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete auction by id (admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/admin/auctions/22",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"auctions",
+								"22"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auctions",
+			"item": [
+				{
+					"name": "get all opening auctions for home screen",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "page",
+								"value": "0",
+								"type": "text"
+							},
+							{
+								"key": "page_size",
+								"value": "10",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions",
 							"host": [
 								"127",
 								"0",
@@ -142,19 +529,48 @@
 								"api",
 								"v1",
 								"auctions"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": null
-								}
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "get all auctions by id",
+					"name": "get all my auctions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "page",
+								"value": "0",
+								"type": "text"
+							},
+							{
+								"key": "page_size",
+								"value": "10",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions/myAuctions",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auctions",
+								"myAuctions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get auction by id",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -170,7 +586,7 @@
 							}
 						],
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/8",
+							"raw": "127.0.0.1:8080/api/v1/auctions/28",
 							"host": [
 								"127",
 								"0",
@@ -182,7 +598,7 @@
 								"api",
 								"v1",
 								"auctions",
-								"8"
+								"28"
 							]
 						}
 					},
@@ -195,7 +611,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"z\",\n\t\t\"timeStart\": \"2022-07-22T09:50:50\",\n\t\t\"timeEnd\":\"2022-07-23T09:39:50\",\n\t\t\"priceStart\": 0, \n\t\t\"priceStep\": 10000, \n\t\t\"highestPrice\": 0\n}",
+							"raw": "{\n    \"description\": \"bai dau gia category1\",\n\t\t\"timeStart\": \"2022-07-11T14:53:50\",\n\t\t\"timeEnd\":\"2022-07-11T14:58:50\",\n\t\t\"priceStart\": 100000, \n\t\t\"priceStep\": 1000, \n\t\t\"category\": {\n\t\t\t\"id\": 1\n\t\t}\n}\t\t\t\t\t\t\t",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -227,7 +643,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\t\"id\": 13\r\n}",
+							"raw": "{\r\n\t\"timeStart\": \"2022-07-10T22:53:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -235,30 +651,7 @@
 							}
 						},
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"v1",
-								"auctions"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "delete auction by id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/14",
+							"raw": "127.0.0.1:8080/api/v1/auctions/33",
 							"host": [
 								"127",
 								"0",
@@ -270,7 +663,341 @@
 								"api",
 								"v1",
 								"auctions",
-								"14"
+								"33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "submit  auction pending",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions/33/submit",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auctions",
+								"33",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete auction by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions/27",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auctions",
+								"27"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "bids",
+			"item": [
+				{
+					"name": "post bid",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"price\": 101000\n}\t\t\t\t\t\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions/26/bids",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auctions",
+								"26",
+								"bids"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get alls bid by auction id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "page",
+								"value": "0",
+								"type": "text"
+							},
+							{
+								"key": "page_size",
+								"value": "10",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions/28/bids",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auctions",
+								"28",
+								"bids"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "items",
+			"item": [
+				{
+					"name": "post item",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"ban phim filco leopold\",\n\t\"description\": \"filco filco leopold\",\n\t\"amount\": 1,\n\t\"auction\": {\n\t\t\"id\": 33\n\t}\n}\t\t\t\t\t\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/items",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post item image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"imageUrl\": \"1231\"\n}\t\t\t\t\t\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/items/21/itemImages",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"items",
+								"21",
+								"itemImages"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "reports",
+			"item": [
+				{
+					"name": "post report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"description\": \"thang nay sui bid\",\n\t\"userReporter\": {\n\t\t\"id\": 6\n\t},\n\t\"userReported\": {\n\t\t\"id\": 8\n\t},\n\t\"reportImages\": [\n\t\t{\n\t\t\t\"imageUrl\": \"adu.jpg\"\n\t\t},\n\t\t{\n\t\t\t\"imageUrl\": \"adu2.jpg\"\n\t\t}\n\t]\n}\t\t\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/reports",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"reports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post report image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"imageUrl\": \"1231\"\n\n}\t\t\t\t\t\t\t",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/reports/1/reportImages",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"reports",
+								"1",
+								"reportImages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all reports (admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/admin/reports",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"reports"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "judge report (admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"result\": \"ACCEPTED\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/admin/reports/1/results",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"reports",
+								"1",
+								"results"
 							]
 						}
 					},

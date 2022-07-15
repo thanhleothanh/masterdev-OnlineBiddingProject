@@ -49,7 +49,6 @@ public class ProfileController {
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> changeMyPassword(@Validated @RequestBody UserChangePassword userChangePassword) {
         authService.changeMyPassword(userChangePassword);
-
         CommonResponse response = new CommonResponse(true, "Thay đổi mật khẩu thành công!", null, null);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
@@ -74,6 +73,7 @@ public class ProfileController {
     @GetMapping("/{id}/auctions")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getAuctionsByUserId(@PathVariable(value = "id") Integer id) {
+        profileService.getById(id);
         List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctionService.getAuctionsByUserId(id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
