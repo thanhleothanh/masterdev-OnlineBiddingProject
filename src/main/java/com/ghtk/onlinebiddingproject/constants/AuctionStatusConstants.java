@@ -16,4 +16,9 @@ public enum AuctionStatusConstants {
     CANCELED(-1);
 
     private final int status;
+    private static final AuctionStatusConstants[] allValues = values();
+
+    public static AuctionStatusConstants fromOrinal(Integer n) {
+        return allValues[n];
+    }
 }

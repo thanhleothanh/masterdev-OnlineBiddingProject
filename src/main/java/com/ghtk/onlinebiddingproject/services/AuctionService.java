@@ -4,6 +4,7 @@ import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,8 @@ import java.util.List;
 
 public interface AuctionService {
     AuctionPagingResponse get(Specification<Auction> spec, HttpHeaders headers, Sort sort);
+
+    List<AuctionTopTrendingDto> getTopTrending();
 
     List<Auction> getMyAuctions(AuctionStatusConstants status);
 

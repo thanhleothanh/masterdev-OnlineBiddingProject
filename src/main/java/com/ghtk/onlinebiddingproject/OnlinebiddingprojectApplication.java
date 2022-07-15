@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class OnlinebiddingprojectApplication {
-
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
@@ -15,7 +14,5 @@ public class OnlinebiddingprojectApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(OnlinebiddingprojectApplication.class, args);
-
     }
-
 }

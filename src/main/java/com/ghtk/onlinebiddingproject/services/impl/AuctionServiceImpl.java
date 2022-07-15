@@ -2,6 +2,7 @@ package com.ghtk.onlinebiddingproject.services.impl;
 
 import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
 import com.ghtk.onlinebiddingproject.constants.ReviewResultConstants;
+import com.ghtk.onlinebiddingproject.daos.AuctionDao;
 import com.ghtk.onlinebiddingproject.exceptions.BadRequestException;
 import com.ghtk.onlinebiddingproject.exceptions.NotFoundException;
 import com.ghtk.onlinebiddingproject.models.entities.Admin;
@@ -10,6 +11,7 @@ import com.ghtk.onlinebiddingproject.models.entities.ReviewResult;
 import com.ghtk.onlinebiddingproject.models.entities.User;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.repositories.AuctionRepository;
 import com.ghtk.onlinebiddingproject.repositories.ReviewResultRepository;
 import com.ghtk.onlinebiddingproject.security.UserDetailsImpl;
@@ -36,6 +38,8 @@ public class AuctionServiceImpl implements AuctionService {
     @Autowired
     private AuctionRepository auctionRepository;
     @Autowired
+    private AuctionDao auctionDao;
+    @Autowired
     private ReviewResultRepository reviewResultRepository;
 
     @Override
@@ -46,6 +50,11 @@ public class AuctionServiceImpl implements AuctionService {
             List<Auction> productEntities = helperGet(spec, sort);
             return new AuctionPagingResponse(productEntities.size(), 0, 0, 0, productEntities);
         }
+    }
+
+    @Override
+    public List<AuctionTopTrendingDto> getTopTrending() {
+        return auctionDao.getTopTrending();
     }
 
     @Override
@@ -192,12 +201,6 @@ public class AuctionServiceImpl implements AuctionService {
         Auction auction = getById(id);
         auctionRepository.delete(auction);
     }
-
-
-    /*
-     * Interested User
-     * */
-
 
     /**
      * helper methods

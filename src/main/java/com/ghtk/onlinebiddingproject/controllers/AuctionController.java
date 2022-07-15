@@ -8,6 +8,8 @@ import com.ghtk.onlinebiddingproject.models.entities.Bid;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.requests.BidRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponseDto;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
 import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
 import com.ghtk.onlinebiddingproject.services.impl.AuctionUserServiceImpl;
@@ -64,6 +66,7 @@ public class AuctionController {
      * có thể sort theo price, time
      * phân trang
      * */
+
     @GetMapping("")
     public ResponseEntity<CommonResponse> get(
             @Join(path = "category", alias = "c")
@@ -80,10 +83,21 @@ public class AuctionController {
             Sort sort,
             @RequestHeader HttpHeaders headers) {
         AuctionPagingResponse pagingResponse = auctionService.get(spec, headers, sort);
+        List<AuctionDto> auctionDto = entityToDtoConverter.convertToListAuctionDto(pagingResponse.getAuctions());
 
-        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(pagingResponse.getAuctions());
+        AuctionPagingResponseDto dtoResponse = entityToDtoConverter.convertToDto(pagingResponse);
+        dtoResponse.setAuctions(auctionDto);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpHeadersUtils.returnHttpHeaders(pagingResponse), HttpStatus.OK);
+    }
+
+    @GetMapping("/topTrending")
+    public ResponseEntity<CommonResponse> getTopTrending() {
+        List<AuctionTopTrendingDto> auctionsDto = auctionService.getTopTrending();
+
+//        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctions);
+        CommonResponse response = new CommonResponse(true, "Success", auctionsDto, null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /*
