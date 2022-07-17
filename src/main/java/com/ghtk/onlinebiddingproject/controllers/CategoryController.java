@@ -6,7 +6,6 @@ import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
 import com.ghtk.onlinebiddingproject.services.impl.CategoryServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping(path = "api/v1/categories")
 public class CategoryController {
 

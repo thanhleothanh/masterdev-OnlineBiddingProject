@@ -11,7 +11,6 @@ import com.ghtk.onlinebiddingproject.services.impl.BidServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
-import lombok.extern.slf4j.Slf4j;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping(path = "api/v1/admin/auctions")
 public class AdminAuctionController {
     @Autowired

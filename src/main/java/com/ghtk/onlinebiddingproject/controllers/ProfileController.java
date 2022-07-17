@@ -11,7 +11,6 @@ import com.ghtk.onlinebiddingproject.services.impl.AuthServiceImpl;
 import com.ghtk.onlinebiddingproject.services.impl.ProfileServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping(path = "api/v1/profiles")
 public class ProfileController {
     @Autowired

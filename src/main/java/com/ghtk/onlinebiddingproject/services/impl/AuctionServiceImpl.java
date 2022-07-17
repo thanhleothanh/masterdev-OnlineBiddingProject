@@ -5,10 +5,7 @@ import com.ghtk.onlinebiddingproject.constants.ReviewResultConstants;
 import com.ghtk.onlinebiddingproject.daos.AuctionDao;
 import com.ghtk.onlinebiddingproject.exceptions.BadRequestException;
 import com.ghtk.onlinebiddingproject.exceptions.NotFoundException;
-import com.ghtk.onlinebiddingproject.models.entities.Admin;
-import com.ghtk.onlinebiddingproject.models.entities.Auction;
-import com.ghtk.onlinebiddingproject.models.entities.ReviewResult;
-import com.ghtk.onlinebiddingproject.models.entities.User;
+import com.ghtk.onlinebiddingproject.models.entities.*;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
@@ -31,12 +28,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
     @Autowired
     private AuctionRepository auctionRepository;
+    @Autowired
+    private ItemServiceImpl itemService;
     @Autowired
     private AuctionDao auctionDao;
     @Autowired
@@ -61,8 +61,8 @@ public class AuctionServiceImpl implements AuctionService {
     public List<Auction> getMyAuctions(AuctionStatusConstants status) {
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         if (status != null)
-            return auctionRepository.findByUser_IdAndStatus(userDetails.getId(), status);
-        return auctionRepository.findByUser_Id(userDetails.getId());
+            return auctionRepository.findByUser_IdAndStatus(userDetails.getId(), status, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return auctionRepository.findByUser_Id(userDetails.getId(), Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
     @Override
@@ -83,10 +83,9 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     @Transactional(rollbackFor = {SQLException.class})
-    public Auction save(AuctionRequestDto auctionDto, Auction auction) {
+    public Auction save(AuctionRequestDto auctionDto, Auction auction, Item item) {
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         if (userDetails.isSuspended()) throw new AccessDeniedException("Tài khoản của bạn đang bị giới hạn!");
-
         User user = new User(userDetails.getId());
         auction.setUser(user);
 
@@ -96,9 +95,15 @@ public class AuctionServiceImpl implements AuctionService {
             throw new BadRequestException("Thời gian bắt đầu đấu giá không hợp lệ!");
         if (LocalDateTime.now().isAfter(auctionDto.getTimeEnd()))
             throw new BadRequestException("Thời gian kết thúc đấu giá không hợp lệ!");
+        if (ChronoUnit.MINUTES.between(auctionDto.getTimeStart(), auctionDto.getTimeEnd()) > 1440)
+            throw new BadRequestException("Thời gian bắt đầu và thời gian kết thúc không được cách nhau quá 24 tiếng!");
 
         auction.setHighestPrice(0.0);
-        return auctionRepository.save(auction);
+        Auction newAuction = auctionRepository.save(auction);
+        item.setAuction(newAuction);
+        Item newItem = itemService.save(item);
+        newAuction.setItem(newItem);
+        return newAuction;
     }
 
     @Override
@@ -124,6 +129,8 @@ public class AuctionServiceImpl implements AuctionService {
             throw new BadRequestException("Thời gian bắt đầu đấu giá không hợp lệ!");
         if (LocalDateTime.now().isAfter(newTimeEnd))
             throw new BadRequestException("Thời gian kết thúc đấu giá không hợp lệ!");
+        if (ChronoUnit.MINUTES.between(newTimeStart, newTimeEnd) > 1440)
+            throw new BadRequestException("Thời gian bắt đầu và thời gian kết thúc không được cách nhau quá 24 tiếng!");
         if (currentStatus.equals(AuctionStatusConstants.DRAFT) || currentStatus.equals(AuctionStatusConstants.PENDING)) {
             DtoToEntityUtils.copyNonNullProperties(auctionDto, auction);
             return auctionRepository.save(auction);

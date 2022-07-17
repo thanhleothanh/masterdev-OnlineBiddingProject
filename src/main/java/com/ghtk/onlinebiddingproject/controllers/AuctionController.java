@@ -5,20 +5,17 @@ import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.BidDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.entities.Bid;
+import com.ghtk.onlinebiddingproject.models.entities.Item;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.requests.BidRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponseDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
-import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.AuctionUserServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.BidServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.WebSocketServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.*;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
-import lombok.extern.slf4j.Slf4j;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
@@ -35,6 +32,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /*
@@ -43,11 +41,12 @@ import java.util.List;
  * */
 
 @RestController
-@Slf4j
 @RequestMapping(path = "api/v1/auctions")
 public class AuctionController {
     @Autowired
     private WebSocketServiceImpl webSocketService;
+    @Autowired
+    private ItemServiceImpl itemService;
     @Autowired
     private AuctionServiceImpl auctionService;
     @Autowired
@@ -125,10 +124,12 @@ public class AuctionController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> save(@Validated @RequestBody AuctionRequestDto auctionDto) {
+    public ResponseEntity<CommonResponse> save(@Valid @RequestBody AuctionRequestDto auctionDto) {
         Auction auction = dtoToEntityConverter.convertToEntity(auctionDto);
+        Item item = dtoToEntityConverter.convertToEntity(auctionDto.getItem());
+        Auction newAuction = auctionService.save(auctionDto, auction, item);
 
-        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.save(auctionDto, auction));
+        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(newAuction);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

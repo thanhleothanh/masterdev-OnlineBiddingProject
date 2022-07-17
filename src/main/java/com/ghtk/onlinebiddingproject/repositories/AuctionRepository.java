@@ -10,9 +10,12 @@ import java.util.Collection;
 import java.util.List;
 
 public interface AuctionRepository extends JpaRepository<Auction, Integer>, JpaSpecificationExecutor<Auction> {
-    List<Auction> findByUser_Id(Integer id);
+    List<Auction> findByUser_Id(Integer id, Sort sort);
 
-    List<Auction> findByUser_IdAndStatus(Integer id, AuctionStatusConstants status);
+    List<Auction> findByUser_IdAndStatus(Integer id, AuctionStatusConstants status, Sort sort);
+//    List<Auction> findByUser_Id(Integer id);
+
+//    List<Auction> findByUser_IdAndStatus(Integer id, AuctionStatusConstants status);
 
     List<Auction> findByUser_IdAndStatusNotIn(Integer id, Collection<AuctionStatusConstants> statuses, Sort sort);
 
