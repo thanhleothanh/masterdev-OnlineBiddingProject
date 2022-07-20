@@ -5,17 +5,17 @@ import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.BidDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.entities.Bid;
+import com.ghtk.onlinebiddingproject.models.entities.Item;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.requests.BidRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponseDto;
+import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
-import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.AuctionUserServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.BidServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.*;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
-import lombok.extern.slf4j.Slf4j;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.GreaterThan;
 import net.kaczmarzyk.spring.data.jpa.domain.LessThan;
@@ -32,6 +32,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /*
@@ -40,9 +41,12 @@ import java.util.List;
  * */
 
 @RestController
-@Slf4j
 @RequestMapping(path = "api/v1/auctions")
 public class AuctionController {
+    @Autowired
+    private WebSocketServiceImpl webSocketService;
+    @Autowired
+    private ItemServiceImpl itemService;
     @Autowired
     private AuctionServiceImpl auctionService;
     @Autowired
@@ -61,6 +65,7 @@ public class AuctionController {
      * có thể sort theo price, time
      * phân trang
      * */
+
     @GetMapping("")
     public ResponseEntity<CommonResponse> get(
             @Join(path = "category", alias = "c")
@@ -77,10 +82,21 @@ public class AuctionController {
             Sort sort,
             @RequestHeader HttpHeaders headers) {
         AuctionPagingResponse pagingResponse = auctionService.get(spec, headers, sort);
+        List<AuctionDto> auctionDto = entityToDtoConverter.convertToListAuctionDto(pagingResponse.getAuctions());
 
-        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(pagingResponse.getAuctions());
+        AuctionPagingResponseDto dtoResponse = entityToDtoConverter.convertToDto(pagingResponse);
+        dtoResponse.setAuctions(auctionDto);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpHeadersUtils.returnHttpHeaders(pagingResponse), HttpStatus.OK);
+    }
+
+    @GetMapping("/topTrending")
+    public ResponseEntity<CommonResponse> getTopTrending() {
+        List<AuctionTopTrendingDto> auctionsDto = auctionService.getTopTrending();
+
+//        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctions);
+        CommonResponse response = new CommonResponse(true, "Success", auctionsDto, null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /*
@@ -99,7 +115,7 @@ public class AuctionController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getById(@PathVariable(value = "id") Integer id) {
         AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.getById(id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
@@ -108,10 +124,12 @@ public class AuctionController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> save(@Validated @RequestBody AuctionRequestDto auctionDto) {
+    public ResponseEntity<CommonResponse> save(@Valid @RequestBody AuctionRequestDto auctionDto) {
         Auction auction = dtoToEntityConverter.convertToEntity(auctionDto);
+        Item item = dtoToEntityConverter.convertToEntity(auctionDto.getItem());
+        Auction newAuction = auctionService.save(auctionDto, auction, item);
 
-        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.save(auctionDto, auction));
+        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(newAuction);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -152,8 +170,8 @@ public class AuctionController {
     @GetMapping("/{id}/bids")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getBidsByAuctionId(@PathVariable(value = "id") Integer id) {
+        auctionService.getById(id);
         List<Bid> bids = bidService.getBidsByAuctionId(id);
-
         List<BidDto> dtoResponse = entityToDtoConverter.convertToListBidDto(bids);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -163,9 +181,9 @@ public class AuctionController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> saveBid(@PathVariable(value = "id") Integer id, @Validated @RequestBody BidRequestDto bidDto) {
         Bid bid = dtoToEntityConverter.convertToEntity(bidDto);
-
         BidDto dtoResponse = entityToDtoConverter.convertToBidDto(bidService.saveBid(id, bidDto, bid));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
+        webSocketService.sendBid(id, response);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

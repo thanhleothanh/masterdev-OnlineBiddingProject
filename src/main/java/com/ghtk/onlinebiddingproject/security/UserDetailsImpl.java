@@ -37,7 +37,6 @@ public class UserDetailsImpl implements UserDetails {
 
     public static UserDetailsImpl build(Profile profile) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(profile.getRole().getName()));
-
         return new UserDetailsImpl(
                 profile.getId(),
                 profile.getUsername(),
@@ -47,7 +46,6 @@ public class UserDetailsImpl implements UserDetails {
                 profile.getImageUrl(),
                 profile.getStatus(),
                 authorities);
-
     }
 
     public boolean isSuspended() {
