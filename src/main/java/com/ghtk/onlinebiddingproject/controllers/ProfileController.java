@@ -11,18 +11,16 @@ import com.ghtk.onlinebiddingproject.services.impl.AuthServiceImpl;
 import com.ghtk.onlinebiddingproject.services.impl.ProfileServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping(path = "api/v1/profiles")
 public class ProfileController {
     @Autowired
@@ -47,7 +45,7 @@ public class ProfileController {
 
     @PutMapping("/myProfile/changePassword")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CommonResponse> changeMyPassword(@Validated @RequestBody UserChangePassword userChangePassword) {
+    public ResponseEntity<CommonResponse> changeMyPassword(@Valid @RequestBody UserChangePassword userChangePassword) {
         authService.changeMyPassword(userChangePassword);
         CommonResponse response = new CommonResponse(true, "Thay đổi mật khẩu thành công!", null, null);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
@@ -55,7 +53,7 @@ public class ProfileController {
 
     @PutMapping("/myProfile")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
-    public ResponseEntity<CommonResponse> putMyProfile(@Validated @RequestBody UserChangeProfile userChangeProfile) {
+    public ResponseEntity<CommonResponse> putMyProfile(@Valid @RequestBody UserChangeProfile userChangeProfile) {
         ProfileDto dtoResponse = entityToDtoConverter.convertToDto(profileService.putMyProfile(userChangeProfile));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);

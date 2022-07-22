@@ -15,5 +15,5 @@ public class UserChangePassword {
     private String newPassword;
 
     @NotBlank(message = "xác nhận lại password mới!")
-    private String newPasswordConfirm;
+    private String confirmedNewPassword;
 }

@@ -23,6 +23,9 @@ public class ReportImage {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
+    @Column(name = "public_id", nullable = true)
+    private String publicId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id", nullable = false)
     private Report report;

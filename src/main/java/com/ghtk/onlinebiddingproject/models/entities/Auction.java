@@ -52,7 +52,7 @@ public class Auction extends BaseEntity {
     @OneToOne(mappedBy = "auction")
     private Item item;
 
-    @OneToOne(mappedBy = "auction")
+    @OneToOne(mappedBy = "auction", fetch = FetchType.LAZY)
     private Winner winner;
 
     @OneToOne(mappedBy = "auction", fetch = FetchType.LAZY)

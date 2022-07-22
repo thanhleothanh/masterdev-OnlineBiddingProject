@@ -9,6 +9,7 @@ import com.ghtk.onlinebiddingproject.models.entities.User;
 import com.ghtk.onlinebiddingproject.models.requests.BidRequestDto;
 import com.ghtk.onlinebiddingproject.repositories.AuctionRepository;
 import com.ghtk.onlinebiddingproject.repositories.BidRepository;
+import com.ghtk.onlinebiddingproject.repositories.UserRepository;
 import com.ghtk.onlinebiddingproject.security.UserDetailsImpl;
 import com.ghtk.onlinebiddingproject.services.BidService;
 import com.ghtk.onlinebiddingproject.utils.CurrentUserUtils;
@@ -24,6 +25,8 @@ import java.util.List;
 @Service
 public class BidServiceImpl implements BidService {
 
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private BidRepository bidRepository;
     @Autowired
@@ -54,21 +57,17 @@ public class BidServiceImpl implements BidService {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy auction với id này!"));
 
-        if (auction.getUser().getId().equals(userDetails.getId())) {
+        Double currentHighestPrice = auction.getHighestPrice() != 0 ? auction.getHighestPrice() : auction.getPriceStart();
+        if (auction.getUser().getId().equals(userDetails.getId()))
             throw new AccessDeniedException("Bạn không thể trả giá cho bài đấu giá của chính mình!");
-        }
-        if (!auction.getStatus().equals(AuctionStatusConstants.OPENING)) {
+        if (!auction.getStatus().equals(AuctionStatusConstants.OPENING))
             throw new AccessDeniedException("Hiện tại không thể trả giá cho bài đấu giá này!");
-        }
-        if (bidDto.getPrice() < auction.getPriceStart()) {
+        if (bidDto.getPrice() < auction.getPriceStart())
             throw new BadRequestException("Giá mới phải cao hơn giá khởi điểm và giá hiện tại!");
-        }
-        if (bidDto.getPrice() <= auction.getHighestPrice()) {
+        if (bidDto.getPrice() < auction.getHighestPrice() + auction.getPriceStep())
             throw new BadRequestException("Giá mới phải cao hơn giá cao nhất hiện tại + bước giá!");
-        }
-        if (bidDto.getPrice() - auction.getHighestPrice() < auction.getPriceStep()) {
-            throw new BadRequestException("Giá mới phải cao hơn giá cao nhất hiện tại + bước giá!");
-        }
+        if (bidDto.getPrice() > (currentHighestPrice * 3))
+            throw new BadRequestException("Giá mới không được hơn gấp 3 giá cao nhất hiện tại");
 
         auction.setHighestPrice(bidDto.getPrice());
         auctionRepository.save(auction);

@@ -10,10 +10,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -21,7 +24,7 @@ public class AuthController {
     private AuthServiceImpl authService;
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse> loginUser(@Validated @RequestBody UserLogin loginRequest) {
+    public ResponseEntity<CommonResponse> loginUser(@Valid @RequestBody UserLogin loginRequest) {
         UserAuthResponse userLoginResponse = authService.login(loginRequest);
         ResponseCookie jwtCookie = authService.generateJwtCookie();
 
@@ -31,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonResponse> signUpUser(@Validated @RequestBody UserSignup signUpRequest) {
+    public ResponseEntity<CommonResponse> signUpUser(@Valid @RequestBody UserSignup signUpRequest) {
         UserAuthResponse userRegisterResponse = authService.signUp(signUpRequest);
 
         CommonResponse commonResponse = new CommonResponse(true, "Đăng ký thành công!", userRegisterResponse, null);

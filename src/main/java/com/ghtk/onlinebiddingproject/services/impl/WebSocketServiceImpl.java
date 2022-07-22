@@ -18,7 +18,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     @SneakyThrows
     public void sendBid(Integer auctionId, CommonResponse commonResponse) {
         String dest = "/topic/auctions/" + auctionId + "/bids";
-        String json = (new ObjectMapper()).writeValueAsString(commonResponse);
+        String json = (new ObjectMapper().writeValueAsString(commonResponse));
         simpMessagingTemplate.convertAndSend(dest, json);
     }
 }

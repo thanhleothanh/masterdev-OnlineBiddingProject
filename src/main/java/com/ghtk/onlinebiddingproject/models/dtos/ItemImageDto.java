@@ -16,6 +16,8 @@ public class ItemImageDto {
     @NotBlank(message = "ảnh sản phẩm không được để trống!")
     private String imageUrl;
 
+    private String publicId;
+
     @JsonIgnore
     private ItemDto item;
 }

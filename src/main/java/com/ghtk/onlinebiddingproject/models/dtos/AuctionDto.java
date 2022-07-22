@@ -43,4 +43,6 @@ public class AuctionDto {
 
     @JsonIgnore
     private List<BidDto> bids;
+
+    private String createdAt;
 }

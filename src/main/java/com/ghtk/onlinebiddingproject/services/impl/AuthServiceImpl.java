@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
         CurrentUserUtils.setCurrentUserDetails(authentication);
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
 
-        return new UserAuthResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getName(), userDetails.getEmail(), userDetails.getImageUrl(), userDetails.getStatus());
+        return new UserAuthResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getName(), userDetails.getEmail(), userDetails.getImageUrl(), userDetails.getAuthorities().stream().findFirst().get().getAuthority(), userDetails.getStatus());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
         if (userRole.getId() == 1) profileRepository.insertAdmin(newUser.getId());
         else profileRepository.insertUser(newUser.getId());
 
-        return new UserAuthResponse(newUser.getId(), newUser.getUsername(), newUser.getName(), newUser.getEmail(), newUser.getImageUrl(), newUser.getStatus());
+        return new UserAuthResponse(newUser.getId(), newUser.getUsername(), newUser.getName(), newUser.getEmail(), newUser.getImageUrl(), newUser.getRole().getName(), newUser.getStatus());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userChangePassword.getCurrentPassword()));
-        if (!userChangePassword.getNewPassword().equals(userChangePassword.getNewPasswordConfirm())) {
+        if (!userChangePassword.getNewPassword().equals(userChangePassword.getConfirmedNewPassword())) {
             throw new BadRequestException("Xác nhận lại mật khẩu mới!");
         }
         Profile profile = profileRepository.findById(userDetails.getId()).get();

@@ -49,7 +49,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"nguoidung1\",\r\n\t\t\"password\": \"123456789\"\r\n}",
+							"raw": "{\r\n    \"username\": \"nguoidung3\",\r\n\t\t\"password\": \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -303,7 +303,7 @@
 							}
 						},
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/profiles/9/auctions",
+							"raw": "127.0.0.1:8080/api/v1/profiles/19/auctions",
 							"host": [
 								"127",
 								"0",
@@ -315,7 +315,7 @@
 								"api",
 								"v1",
 								"profiles",
-								"9",
+								"19",
 								"auctions"
 							]
 						}
@@ -344,7 +344,7 @@
 							}
 						],
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/admin/auctions?status=OPENING",
+							"raw": "127.0.0.1:8080/api/v1/admin/auctions?status=ENDED",
 							"host": [
 								"127",
 								"0",
@@ -361,7 +361,7 @@
 							"query": [
 								{
 									"key": "status",
-									"value": "OPENING"
+									"value": "ENDED"
 								}
 							]
 						}
@@ -416,7 +416,7 @@
 							}
 						},
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/admin/auctions/33/approve",
+							"raw": "127.0.0.1:8080/api/v1/admin/auctions/35/approve",
 							"host": [
 								"127",
 								"0",
@@ -429,7 +429,7 @@
 								"v1",
 								"admin",
 								"auctions",
-								"33",
+								"35",
 								"approve"
 							]
 						}
@@ -512,12 +512,12 @@
 							},
 							{
 								"key": "page_size",
-								"value": "10",
+								"value": "4",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions",
+							"raw": "127.0.0.1:8080/api/v1/auctions?status=PENDING",
 							"host": [
 								"127",
 								"0",
@@ -529,6 +529,47 @@
 								"api",
 								"v1",
 								"auctions"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get top trending auctions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "page",
+								"value": "0",
+								"type": "text"
+							},
+							{
+								"key": "page_size",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "127.0.0.1:8080/api/v1/auctions/topTrending",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auctions",
+								"topTrending"
 							]
 						}
 					},
@@ -586,7 +627,7 @@
 							}
 						],
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/28",
+							"raw": "127.0.0.1:8080/api/v1/auctions/34",
 							"host": [
 								"127",
 								"0",
@@ -598,7 +639,7 @@
 								"api",
 								"v1",
 								"auctions",
-								"28"
+								"34"
 							]
 						}
 					},
@@ -611,7 +652,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"bai dau gia category1\",\n\t\t\"timeStart\": \"2022-07-11T14:53:50\",\n\t\t\"timeEnd\":\"2022-07-11T14:58:50\",\n\t\t\"priceStart\": 100000, \n\t\t\"priceStep\": 1000, \n\t\t\"category\": {\n\t\t\t\"id\": 1\n\t\t}\n}\t\t\t\t\t\t\t",
+							"raw": "{\n\t\"description\": \"bai dau gia test\",\n\t\"timeStart\": \"2022-07-18T10:53:00\",\n\t\"timeEnd\": \"2022-07-19T10:53:01\",\n\t\"priceStart\": 100000,\n\t\"priceStep\": 100000,\n\t\"category\": {\n\t\t\"id\": 2\n\t},\n\t\"item\": {\n\t\t\"name\": \"ban phim filco leopold\",\n\t\t\"description\": \"filco filco leopold\",\n\t\t\"amount\": 1\n\t}\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -643,7 +684,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"timeStart\": \"2022-07-10T22:53:00\"\r\n}",
+							"raw": "{\r\n\t\"timeStart\": \"2022-07-12T19:50:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -651,7 +692,7 @@
 							}
 						},
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/33",
+							"raw": "127.0.0.1:8080/api/v1/auctions/34",
 							"host": [
 								"127",
 								"0",
@@ -663,7 +704,7 @@
 								"api",
 								"v1",
 								"auctions",
-								"33"
+								"34"
 							]
 						}
 					},
@@ -684,7 +725,7 @@
 							}
 						},
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/33/submit",
+							"raw": "127.0.0.1:8080/api/v1/auctions/35/submit",
 							"host": [
 								"127",
 								"0",
@@ -696,7 +737,7 @@
 								"api",
 								"v1",
 								"auctions",
-								"33",
+								"35",
 								"submit"
 							]
 						}
@@ -739,7 +780,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"price\": 101000\n}\t\t\t\t\t\t\t",
+							"raw": "{\n\t\"price\": 100000000000000000000000000000\n}\t\t\t\t\t\t\t",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -747,7 +788,7 @@
 							}
 						},
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/26/bids",
+							"raw": "127.0.0.1:8080/api/v1/auctions/35/bids",
 							"host": [
 								"127",
 								"0",
@@ -759,7 +800,7 @@
 								"api",
 								"v1",
 								"auctions",
-								"26",
+								"35",
 								"bids"
 							]
 						}
@@ -783,7 +824,7 @@
 							}
 						],
 						"url": {
-							"raw": "127.0.0.1:8080/api/v1/auctions/28/bids",
+							"raw": "127.0.0.1:8080/api/v1/auctions/32/bids",
 							"host": [
 								"127",
 								"0",
@@ -795,7 +836,7 @@
 								"api",
 								"v1",
 								"auctions",
-								"28",
+								"32",
 								"bids"
 							]
 						}
@@ -814,7 +855,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"ban phim filco leopold\",\n\t\"description\": \"filco filco leopold\",\n\t\"amount\": 1,\n\t\"auction\": {\n\t\t\"id\": 33\n\t}\n}\t\t\t\t\t\t\t",
+							"raw": "{\n\t\"name\": \"ban phim filco leopold\",\n\t\"description\": \"filco filco leopold\",\n\t\"amount\": 1,\n\t\"auction\": {\n\t\t\"id\": 39\n\t},\n\t\"itemImages\": [\n\t\t{\n\t\t\t\"imageUrl\": \"https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/293313076_1480051099131980_4706168332655760610_n.jpg?stp=dst-jpg_p720x720&_nc_cat=106&ccb=1-7&_nc_sid=5cd70e&_nc_ohc=e9BjlXX_trUAX9TFRr-&_nc_ht=scontent.fhan15-1.fna&oh=00_AT-itj6mSntl2cHRo4x1mgbgMR5YOHzS31y6PaLxQNG4oQ&oe=62D95B2B\"\n\t\t},\n\t\t{\n\t\t\t\"imageUrl\": \"https://scontent.fhan15-1.fna.fbcdn.net/v/t39.30808-6/293313076_1480051099131980_4706168332655760610_n.jpg?stp=dst-jpg_p720x720&_nc_cat=106&ccb=1-7&_nc_sid=5cd70e&_nc_ohc=e9BjlXX_trUAX9TFRr-&_nc_ht=scontent.fhan15-1.fna&oh=00_AT-itj6mSntl2cHRo4x1mgbgMR5YOHzS31y6PaLxQNG4oQ&oe=62D95B2B\"\n\t\t}\n\t]\n}\t\t\t\t\t\t\t",
 							"options": {
 								"raw": {
 									"language": "json"

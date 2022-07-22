@@ -16,6 +16,8 @@ public class ReportImageDto {
     @NotBlank(message = "thiếu thông tin url ảnh!")
     private String imageUrl;
 
+    private String publicId;
+
     @JsonIgnore
     private ReportDto report;
 }

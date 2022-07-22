@@ -14,5 +14,6 @@ public class UserAuthResponse {
     private String name;
     private String email;
     private String imageUrl;
+    private String role;
     private UserStatusConstants status;
 }

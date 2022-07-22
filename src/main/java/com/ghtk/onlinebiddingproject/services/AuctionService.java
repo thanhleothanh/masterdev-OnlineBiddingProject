@@ -2,6 +2,7 @@ package com.ghtk.onlinebiddingproject.services;
 
 import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
+import com.ghtk.onlinebiddingproject.models.entities.Item;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
@@ -22,7 +23,7 @@ public interface AuctionService {
 
     Auction getById(Integer id);
 
-    Auction save(AuctionRequestDto auctionDto, Auction auction);
+    Auction save(AuctionRequestDto auctionDto, Auction auction, Item item);
 
     Auction put(AuctionRequestDto auctionDto, Auction auction);
 
@@ -39,7 +40,7 @@ public interface AuctionService {
 
     Auction adminPut(AuctionRequestDto auctionDto, Auction auction);
 
-    Auction adminReviewSubmit(Auction auction);
+    Auction adminReviewSubmit(AuctionRequestDto auctionRequestDto, Auction auction);
 
     void adminDeleteById(Integer id);
 
