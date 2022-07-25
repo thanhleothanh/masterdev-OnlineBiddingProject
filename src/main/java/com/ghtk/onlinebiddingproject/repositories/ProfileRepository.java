@@ -15,6 +15,8 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer>, JpaS
 
     boolean existsByUsername(String username);
 
+    boolean existsByEmail(String email);
+
     @Modifying
     @Query(value = "INSERT INTO user(`profile_id`) VALUES (:profileId)", nativeQuery = true)
     @Transactional
@@ -24,5 +26,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer>, JpaS
     @Query(value = "INSERT INTO admin(`profile_id`) VALUES (:profileId)", nativeQuery = true)
     @Transactional
     void insertAdmin(@Param("profileId") Integer profileId);
+
+
 
 }

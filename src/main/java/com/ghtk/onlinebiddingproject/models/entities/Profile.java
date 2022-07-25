@@ -15,6 +15,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "profile")
 public class Profile extends BaseEntity {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,13 +46,14 @@ public class Profile extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        this.status = UserStatusConstants.valueOf("ACTIVE");
+        this.status = UserStatusConstants.valueOf("INACTIVE");
     }
 
-    public Profile(String username, String password, String name, Role role) {
+    public Profile(String username, String password, String name, String email , Role role) {
         this.username = username;
         this.password = password;
         this.name = name;
+        this.email = email;
         this.role = role;
     }
 }

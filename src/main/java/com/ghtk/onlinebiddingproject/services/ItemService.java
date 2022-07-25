@@ -7,8 +7,6 @@ import com.ghtk.onlinebiddingproject.models.requests.ItemRequestDto;
 import java.io.IOException;
 
 public interface ItemService {
-
-
     Item getById(Integer id);
 
     Item save(Item item);

@@ -10,7 +10,10 @@ public enum UserStatusConstants {
 
     BANNED(0),
     SUSPENDED(1),
-    ACTIVE(2);
+
+    ACTIVE(2),
+
+    INACTIVE(3);
 
     private final int status;
 }

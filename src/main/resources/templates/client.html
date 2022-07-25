@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 48px;
+        }
+    </style>
+</head>
+<body>
+<p th:text="${'Xin chào, ' + name}"></p>
+<p> Chúng tôi đến từ bên đấu giá THE BOYS bạn hãy vui lòng ấn vào link sau để xác thực tài khoản của ban! </p>
+<p th:text="${'- Tên truy cập: ' + userName}"></p>
+<p th:text="${'- Link xác thực: '+ token}"></p>
+<p>Lưu ý: Đây là link mặc định được tạo bởi hệ thống và chỉ có giá trị trong vòng 10 phút!</p>
+<p>Vui lòng không trả lời lại email này. THANK YOU </p>
+</body>
+</html>
