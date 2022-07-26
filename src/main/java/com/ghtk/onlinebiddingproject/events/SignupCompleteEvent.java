@@ -1,4 +1,4 @@
-package com.ghtk.onlinebiddingproject.event;
+package com.ghtk.onlinebiddingproject.events;
 
 import com.ghtk.onlinebiddingproject.models.entities.Profile;
 import lombok.Getter;

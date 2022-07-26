@@ -37,18 +37,11 @@ public class ReportServiceImpl implements ReportService {
     private ReportImageRepository reportImageRepository;
 
     @Override
-    public ReportPagingResponse get(Specification<Report> spec, HttpHeaders headers, Sort sort) {
-        if (PaginationUtils.isPaginationRequested(headers)) {
-            return helperGet(spec, PaginationUtils.buildPageRequest(headers, sort));
-        } else {
-            List<Report> reportEntities = helperGet(spec, sort);
-            return new ReportPagingResponse(reportEntities.size(), 0, 0, 0, reportEntities);
-        }
-    }
-
-    @Override
     @Transactional(rollbackFor = {SQLException.class})
     public Report save(Report report) {
+        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
+        if (userDetails.isSuspended()) throw new AccessDeniedException("Tài khoản của bạn đang bị giới hạn!");
+
         Report newReport = reportRepository.save(report);
         List<ReportImage> reportImages = report.getReportImages();
         if (reportImages != null && reportImages.size() != 0) {
@@ -63,6 +56,16 @@ public class ReportServiceImpl implements ReportService {
     /*
      * For admin
      * */
+
+    @Override
+    public ReportPagingResponse get(Specification<Report> spec, HttpHeaders headers, Sort sort) {
+        if (PaginationUtils.isPaginationRequested(headers)) {
+            return helperGet(spec, PaginationUtils.buildPageRequest(headers, sort));
+        } else {
+            List<Report> reportEntities = helperGet(spec, sort);
+            return new ReportPagingResponse(reportEntities.size(), 0, 0, 0, reportEntities);
+        }
+    }
 
     @Override
     public Report adminGetById(Integer id) {
@@ -111,6 +114,7 @@ public class ReportServiceImpl implements ReportService {
     /**
      * helper methods
      */
+
     public List<Report> helperGet(Specification<Report> spec, Sort sort) {
         return reportRepository.findAll(spec, sort);
     }

@@ -1,5 +1,6 @@
 package com.ghtk.onlinebiddingproject.services.impl;
 
+import com.ghtk.onlinebiddingproject.exceptions.NotFoundException;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.entities.AuctionUser;
 import com.ghtk.onlinebiddingproject.models.entities.User;
@@ -16,10 +17,18 @@ public class AuctionUserServiceImpl implements AuctionUserService {
     private AuctionUserRepository auctionUserRepository;
 
     @Override
-    public void saveInterestUser(Integer auctionId) {
+    public boolean getInterestedAuction(Integer auctionId) {
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
-        AuctionUser interestedUser = auctionUserRepository.findByAuction_IdAndUser_Id(auctionId, userDetails.getId());
-        if (interestedUser == null) {
+        boolean existedRecord = auctionUserRepository.existsByAuction_IdAndUser_Id(auctionId, userDetails.getId());
+        if (!existedRecord) throw new NotFoundException("Người dùng chưa quan tâm auction này!");
+        return existedRecord;
+    }
+
+    @Override
+    public void saveInterestedAuction(Integer auctionId) {
+        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
+        boolean existedRecord = auctionUserRepository.existsByAuction_IdAndUser_Id(auctionId, userDetails.getId());
+        if (!existedRecord) {
             Auction auction = new Auction(auctionId);
             User user = new User(userDetails.getId());
             AuctionUser auctionUser = new AuctionUser(auction, user);
@@ -28,7 +37,7 @@ public class AuctionUserServiceImpl implements AuctionUserService {
     }
 
     @Override
-    public void removeInterestUser(Integer auctionId) {
+    public void removeInterestedAuction(Integer auctionId) {
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         AuctionUser interestedUser = auctionUserRepository.findByAuction_IdAndUser_Id(auctionId, userDetails.getId());
         if (interestedUser != null) {

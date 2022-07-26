@@ -2,7 +2,7 @@ package com.ghtk.onlinebiddingproject.services.impl;
 
 import com.ghtk.onlinebiddingproject.constants.MailConstants;
 import com.ghtk.onlinebiddingproject.constants.UserStatusConstants;
-import com.ghtk.onlinebiddingproject.event.SignupCompleteEvent;
+import com.ghtk.onlinebiddingproject.events.SignupCompleteEvent;
 import com.ghtk.onlinebiddingproject.exceptions.BadRequestException;
 import com.ghtk.onlinebiddingproject.exceptions.NotFoundException;
 import com.ghtk.onlinebiddingproject.models.dtos.DataMailDto;
@@ -43,7 +43,6 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class AuthServiceImpl implements AuthService {
-
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired

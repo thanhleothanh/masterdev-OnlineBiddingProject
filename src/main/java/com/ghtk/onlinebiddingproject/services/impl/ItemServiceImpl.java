@@ -56,7 +56,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item put(ItemRequestDto itemDto, Item item) {
+    public Item put(ItemRequestDto itemDto, Integer id) {
+        Item item = getById(id);
         Auction auction = auctionRepository.findById(item.getAuction().getId())
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy auction với id này!"));
         AuctionStatusConstants currentStatus = auction.getStatus();
@@ -80,8 +81,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemImage saveItemImage(Integer id, ItemImage itemImage) {
-        Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Không tìm thấy item với id này!"));
+        Item item = getById(id);
         Auction auction = item.getAuction();
         boolean isPostedByCurrentUser = CurrentUserUtils.isPostedByCurrentUser(auction.getUser().getId());
         if (isPostedByCurrentUser) {

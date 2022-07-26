@@ -25,7 +25,6 @@ public class AuthController {
     @Autowired
     private ProfileRepository profileRepository;
 
-
     @PostMapping("/login")
     public ResponseEntity<CommonResponse> loginUser(@Valid @RequestBody UserLogin loginRequest, HttpServletRequest request) {
         UserAuthResponse userLoginResponse = authService.login(loginRequest, request);
@@ -61,18 +60,4 @@ public class AuthController {
         CommonResponse commonResponse = new CommonResponse(false, "Bad User", "xác thực email thất bại", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commonResponse);
     }
-
-
-//    @GetMapping("/resendVerifyToken")
-//    public ResponseEntity<CommonResponse> resendVerificationToken(@RequestParam("token") String oldToken , HttpServletRequest request)
-//    {
-//        VerificationToken verificationToken = authService.garenateNewVerification(oldToken);
-//        Profile profile = profileRepository.findById(verificationToken.getProfile().getId())
-//                .orElseThrow(() -> new NotFoundException("không tìm thấy profile"));
-//            authService.resendVerificationMail(profile,authService.applicationUrl(request),verificationToken);
-//        CommonResponse commonResponse = new CommonResponse(true, "Resend token success", "Đã gửi lại môt mã token khác cho bạn" , null);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(commonResponse);
-//    }
-
-
 }

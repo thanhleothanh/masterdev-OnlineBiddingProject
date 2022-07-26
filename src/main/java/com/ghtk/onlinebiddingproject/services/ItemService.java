@@ -11,7 +11,7 @@ public interface ItemService {
 
     Item save(Item item);
 
-    Item put(ItemRequestDto itemDto, Item item);
+    Item put(ItemRequestDto itemDto, Integer id);
 
     ItemImage saveItemImage(Integer id, ItemImage itemImage);
 

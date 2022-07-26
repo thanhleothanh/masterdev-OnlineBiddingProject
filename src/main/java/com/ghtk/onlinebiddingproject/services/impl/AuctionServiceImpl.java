@@ -10,7 +10,9 @@ import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.repositories.AuctionRepository;
+import com.ghtk.onlinebiddingproject.repositories.AuctionUserRepository;
 import com.ghtk.onlinebiddingproject.repositories.ReviewResultRepository;
+import com.ghtk.onlinebiddingproject.repositories.WinnerRepository;
 import com.ghtk.onlinebiddingproject.security.UserDetailsImpl;
 import com.ghtk.onlinebiddingproject.services.AuctionService;
 import com.ghtk.onlinebiddingproject.utils.CurrentUserUtils;
@@ -30,11 +32,16 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuctionServiceImpl implements AuctionService {
     @Autowired
     private AuctionRepository auctionRepository;
+    @Autowired
+    private AuctionUserRepository auctionUserRepository;
+    @Autowired
+    private WinnerRepository winnerRepository;
     @Autowired
     private ItemServiceImpl itemService;
     @Autowired
@@ -66,8 +73,21 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
+    public List<Auction> getWonAuctionsByUserId(Integer userId) {
+        List<Winner> winners = winnerRepository.findByBid_User_Id(userId);
+        return winners.stream().map(Winner::getAuction).collect(Collectors.toList());
+    }
+
+    @Override
     public List<Auction> getAuctionsByUserId(Integer userId) {
         return auctionRepository.findByUser_IdAndStatusNotIn(userId, List.of(AuctionStatusConstants.DRAFT, AuctionStatusConstants.PENDING), Sort.by(Sort.Direction.DESC, "createdAt"));
+    }
+
+    @Override
+    public List<Auction> getMyInterestedAuctions() {
+        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
+        List<AuctionUser> auctionUsers = auctionUserRepository.findByUser_IdAndAuction_Status(userDetails.getId(), AuctionStatusConstants.OPENING);
+        return auctionUsers.stream().map(AuctionUser::getAuction).collect(Collectors.toList());
     }
 
     @Override
@@ -75,8 +95,11 @@ public class AuctionServiceImpl implements AuctionService {
         Auction auction = auctionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy auction với id này!"));
         boolean isPostedByCurrentUser = CurrentUserUtils.isPostedByCurrentUser(auction.getUser().getId());
+        AuctionStatusConstants currentStatus = auction.getStatus();
 
-        if (((auction.getStatus().equals(AuctionStatusConstants.PENDING) || auction.getStatus().equals(AuctionStatusConstants.DRAFT)) && isPostedByCurrentUser) || auction.getStatus().equals(AuctionStatusConstants.OPENING))
+        if ((currentStatus.equals(AuctionStatusConstants.PENDING) || currentStatus.equals(AuctionStatusConstants.DRAFT)) && isPostedByCurrentUser)
+            return auction;
+        if (currentStatus.equals(AuctionStatusConstants.OPENING))
             return auction;
         else throw new AccessDeniedException("Không thể lấy thông tin của bài đấu giá vào lúc này!");
     }
@@ -86,6 +109,7 @@ public class AuctionServiceImpl implements AuctionService {
     public Auction save(AuctionRequestDto auctionDto, Auction auction, Item item) {
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         if (userDetails.isSuspended()) throw new AccessDeniedException("Tài khoản của bạn đang bị giới hạn!");
+
         User user = new User(userDetails.getId());
         auction.setUser(user);
 
@@ -108,7 +132,8 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     @Transactional(rollbackFor = {SQLException.class})
-    public Auction put(AuctionRequestDto auctionDto, Auction auction) {
+    public Auction put(AuctionRequestDto auctionDto, Integer id) {
+        Auction auction = getById(id);
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         if (userDetails.isSuspended()) throw new AccessDeniedException("Tài khoản của bạn đang bị giới hạn!");
 
@@ -141,7 +166,8 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     @Transactional(rollbackFor = {SQLException.class})
-    public Auction submitPending(Auction auction) {
+    public Auction submitPending(Integer id) {
+        Auction auction = getById(id);
         UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
         if (userDetails.isSuspended()) throw new AccessDeniedException("Tài khoản của bạn đang bị giới hạn!");
 
@@ -177,6 +203,7 @@ public class AuctionServiceImpl implements AuctionService {
     /**
      * For admin
      */
+
     @Override
     public Auction adminGetById(Integer id) {
         return auctionRepository.findById(id)
@@ -184,36 +211,34 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public Auction adminPut(AuctionRequestDto auctionDto, Auction auction) {
+    public Auction adminPut(AuctionRequestDto auctionDto, Integer id) {
+        Auction auction = adminGetById(id);
         DtoToEntityUtils.copyNonNullProperties(auctionDto, auction);
         return auctionRepository.save(auction);
     }
 
     @Override
     @Transactional(rollbackFor = {SQLException.class})
-    public Auction adminReviewSubmit(AuctionRequestDto auctionRequestDto, Auction auction) {
+    public Auction adminReviewSubmit(AuctionRequestDto auctionRequestDto, Integer id) {
+        Auction auction = adminGetById(id);
         AuctionStatusConstants currentStatus = auction.getStatus();
+
         if (currentStatus.equals(AuctionStatusConstants.PENDING)) {
             UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
             Admin admin = new Admin(userDetails.getId());
+            AuctionStatusConstants newStatus = auctionRequestDto.getStatus();
+            ReviewResult reviewResult = null;
 
-            ReviewResult reviewResult = new ReviewResult(ReviewResultConstants.ACCEPTED, auction, admin);
-            reviewResultRepository.save(reviewResult);
-            auction.setStatus(AuctionStatusConstants.QUEUED);
-            return auctionRepository.save(auction);
+            if (newStatus.equals(AuctionStatusConstants.QUEUED))
+                reviewResult = new ReviewResult(ReviewResultConstants.ACCEPTED, auction, admin);
+            else if (newStatus.equals(AuctionStatusConstants.CANCELED))
+                reviewResult = new ReviewResult(ReviewResultConstants.REJECTED, auction, admin);
 
-//            if (newStatus != null && newStatus.equals(AuctionStatusConstants.QUEUED)) {
-//                ReviewResult reviewResult = new ReviewResult(ReviewResultConstants.ACCEPTED, auction, admin);
-//                reviewResultRepository.save(reviewResult);
-//                auction.setStatus(AuctionStatusConstants.QUEUED);
-//                return auctionRepository.save(auction);
-//            }
-//            if (newStatus != null && newStatus.equals(AuctionStatusConstants.CANCELED)) {
-//                ReviewResult reviewResult = new ReviewResult(ReviewResultConstants.REJECTED, auction, admin);
-//                reviewResultRepository.save(reviewResult);
-//                auction.setStatus(AuctionStatusConstants.CANCELED);
-//                return auctionRepository.save(auction);
-//            }
+            if (reviewResult != null) {
+                reviewResultRepository.save(reviewResult);
+                auction.setStatus(newStatus);
+                return auctionRepository.save(auction);
+            } else throw new BadRequestException("Duyệt bài đấu giá không thành công!");
         }
         throw new BadRequestException("Chưa thể duyệt bài đấu giá này vào lúc này!");
     }
@@ -226,6 +251,7 @@ public class AuctionServiceImpl implements AuctionService {
     /**
      * helper methods
      */
+
     public List<Auction> helperGet(Specification<Auction> spec, Sort sort) {
         return auctionRepository.findAll(spec, sort);
     }

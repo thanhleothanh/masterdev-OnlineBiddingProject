@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Component;
 public class StartAuctionJob extends QuartzJobBean {
     @Autowired
     private AuctionRepository auctionRepository;
-    @Autowired
-    private Scheduler scheduler;
 
     @Override
     protected void executeInternal(@NotNull JobExecutionContext context) throws JobExecutionException {

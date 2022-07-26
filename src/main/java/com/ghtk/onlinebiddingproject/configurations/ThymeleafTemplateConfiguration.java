@@ -8,24 +8,22 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
 public class ThymeleafTemplateConfiguration {
-     @Bean
-    public ITemplateResolver templateResolver()
-     {
-         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-         templateResolver.setPrefix("templates/");
-         templateResolver.setSuffix(".html");
-         templateResolver.setTemplateMode("HTML");
-         templateResolver.setCharacterEncoding("UTF-8");
-         return templateResolver;
-     }
+    @Bean
+    public ITemplateResolver templateResolver() {
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode("HTML");
+        templateResolver.setCharacterEncoding("UTF-8");
+        return templateResolver;
+    }
 
-     @Bean
-    public SpringTemplateEngine springTemplateEngine(ITemplateResolver templateResolver)
-     {
-         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-         templateEngine.setTemplateResolver(templateResolver);
-         return templateEngine;
-     }
+    @Bean
+    public SpringTemplateEngine springTemplateEngine(ITemplateResolver templateResolver) {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        return templateEngine;
+    }
 
 
 }

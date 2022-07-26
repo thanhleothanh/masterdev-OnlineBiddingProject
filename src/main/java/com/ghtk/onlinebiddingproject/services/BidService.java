@@ -9,7 +9,5 @@ public interface BidService {
 
     List<Bid> getBidsByAuctionId(Integer id);
 
-    Bid getHighestBidByAuctionId(Integer id);
-
     Bid saveBid(Integer auctionId, BidRequestDto bidDto, Bid bid);
 }

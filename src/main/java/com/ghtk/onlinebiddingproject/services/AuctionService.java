@@ -19,18 +19,23 @@ public interface AuctionService {
 
     List<Auction> getMyAuctions(AuctionStatusConstants status);
 
+    List<Auction> getWonAuctionsByUserId(Integer userId);
+
     List<Auction> getAuctionsByUserId(Integer userId);
+
+    List<Auction> getMyInterestedAuctions();
 
     Auction getById(Integer id);
 
     Auction save(AuctionRequestDto auctionDto, Auction auction, Item item);
 
-    Auction put(AuctionRequestDto auctionDto, Auction auction);
+    Auction put(AuctionRequestDto auctionDto, Integer id);
 
-    Auction submitPending(Auction auction);
+    Auction submitPending(Integer id);
+
+//    Auction confirmAuction(AuctionRequestDto auctionRequestDto, Integer id);
 
     void deleteById(Integer id);
-
 
     /*
      * For admin
@@ -38,9 +43,9 @@ public interface AuctionService {
 
     Auction adminGetById(Integer id);
 
-    Auction adminPut(AuctionRequestDto auctionDto, Auction auction);
+    Auction adminPut(AuctionRequestDto auctionDto, Integer id);
 
-    Auction adminReviewSubmit(AuctionRequestDto auctionRequestDto, Auction auction);
+    Auction adminReviewSubmit(AuctionRequestDto auctionRequestDto, Integer id);
 
     void adminDeleteById(Integer id);
 

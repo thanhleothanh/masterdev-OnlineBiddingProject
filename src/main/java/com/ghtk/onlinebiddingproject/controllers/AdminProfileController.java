@@ -2,15 +2,14 @@ package com.ghtk.onlinebiddingproject.controllers;
 
 import com.ghtk.onlinebiddingproject.models.dtos.ProfileDto;
 import com.ghtk.onlinebiddingproject.models.entities.Profile;
+import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
 import com.ghtk.onlinebiddingproject.models.responses.ProfilePagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.ProfilePagingResponseDto;
-import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
 import com.ghtk.onlinebiddingproject.services.impl.ProfileServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Join;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -34,9 +33,7 @@ public class AdminProfileController {
     @GetMapping("")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> adminGetAll(
-            @Join(path = "role", alias = "r")
             @And({
-                    @Spec(path = "r.id", params = "role", spec = Equal.class),
                     @Spec(path = "status", params = "status", spec = Equal.class),
             }) Specification<Profile> spec,
             Sort sort,

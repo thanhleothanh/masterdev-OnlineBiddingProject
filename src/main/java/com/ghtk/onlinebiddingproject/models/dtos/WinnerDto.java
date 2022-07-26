@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WinnerDto {
     private Integer id;
+
     private BidDto bid;
 
     @JsonIgnore

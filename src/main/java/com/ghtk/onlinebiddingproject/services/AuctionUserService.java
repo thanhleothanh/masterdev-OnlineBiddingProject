@@ -2,7 +2,9 @@ package com.ghtk.onlinebiddingproject.services;
 
 public interface AuctionUserService {
 
-    void saveInterestUser(Integer auctionId);
+    boolean getInterestedAuction(Integer auctionId);
 
-    void removeInterestUser(Integer auctionId);
+    void saveInterestedAuction(Integer auctionId);
+
+    void removeInterestedAuction(Integer auctionId);
 }

@@ -1,6 +1,7 @@
 package com.ghtk.onlinebiddingproject.controllers;
 
 
+import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
@@ -78,9 +79,7 @@ public class AdminAuctionController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> adminPut(@PathVariable("id") int id, @Valid @RequestBody AuctionRequestDto auctionDto) {
-        Auction auction = auctionService.adminGetById(id);
-
-        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.adminPut(auctionDto, auction));
+        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.adminPut(auctionDto, id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -88,11 +87,12 @@ public class AdminAuctionController {
     @PutMapping("/{id}/approve")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> adminReviewSubmit(@PathVariable("id") int id, @RequestBody @Valid AuctionRequestDto auctionRequestDto) {
-        Auction auction = auctionService.adminGetById(id);
-        Auction approvedAuction = auctionService.adminReviewSubmit(auctionRequestDto, auction);
+        Auction approvedAuction = auctionService.adminReviewSubmit(auctionRequestDto, id);
 
-        jobSchedulerService.startAuctionScheduler(approvedAuction); //scheduling a job to automatically open the auction when timeStart comes!
-        jobSchedulerService.endAuctionScheduler(approvedAuction); //scheduling a job to automatically end the auction when timeEnd comes!
+        if (approvedAuction.getStatus().equals(AuctionStatusConstants.QUEUED)) {
+            jobSchedulerService.startAuctionScheduler(approvedAuction); //scheduling a job to automatically open the auction when timeStart comes!
+            jobSchedulerService.endAuctionScheduler(approvedAuction); //scheduling a job to automatically end the auction when timeEnd comes!
+        }
         AuctionDto dtoResponse = entityToDtoConverter.convertToDto(approvedAuction);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);

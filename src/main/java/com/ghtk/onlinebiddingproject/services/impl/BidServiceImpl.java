@@ -25,7 +25,6 @@ import java.util.List;
 
 @Service
 public class BidServiceImpl implements BidService {
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -38,11 +37,6 @@ public class BidServiceImpl implements BidService {
     @Override
     public List<Bid> getBidsByAuctionId(Integer auctionId) {
         return bidRepository.findByAuction_Id(auctionId, Sort.by(Sort.Direction.DESC, "price"));
-    }
-
-    @Override
-    public Bid getHighestBidByAuctionId(Integer id) {
-        return bidRepository.findFirstByAuction_IdOrderByPriceDesc(id);
     }
 
     @Override
@@ -65,12 +59,12 @@ public class BidServiceImpl implements BidService {
             throw new BadRequestException("Giá mới phải cao hơn giá khởi điểm và giá hiện tại!");
         if (bidDto.getPrice() < auction.getHighestPrice() + auction.getPriceStep())
             throw new BadRequestException("Giá mới phải cao hơn giá cao nhất hiện tại + bước giá!");
-        if (bidDto.getPrice() > (currentHighestPrice * 3))
+        if (currentHighestPrice >= 100000 && bidDto.getPrice() > (currentHighestPrice * 3))
             throw new BadRequestException("Giá mới không được hơn gấp 3 giá cao nhất hiện tại");
 
         auction.setHighestPrice(bidDto.getPrice());
         auctionRepository.save(auction);
-        auctionUserService.saveInterestUser(auctionId);
+        auctionUserService.saveInterestedAuction(auctionId);
         bid.setUser(currentUser);
         bid.setAuction(auction);
         return bidRepository.save(bid);
