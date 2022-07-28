@@ -20,10 +20,10 @@ public class NotificationAuction {
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "notification_id", nullable = false)
+    @JoinColumn(name = "notification_id", referencedColumnName = "id",nullable = false)
     private Notification notification;
 
     @OneToOne
-    @JoinColumn(name = "auction_id", nullable = false)
+    @JoinColumn(name = "auction_id", referencedColumnName = "user_id",nullable = false)
     private Auction auction;
 }
