@@ -43,7 +43,6 @@ public class Profile extends BaseEntity {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-
     @PrePersist
     public void prePersist() {
         this.status = UserStatusConstants.valueOf("INACTIVE");

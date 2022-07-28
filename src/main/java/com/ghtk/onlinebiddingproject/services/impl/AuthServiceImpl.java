@@ -66,21 +66,21 @@ public class AuthServiceImpl implements AuthService {
         Profile profile = profileRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy user với username: " + loginRequest.getUsername()));
 
-        VerificationToken verificationToken = verificationTokenRepository.findByProfile_Id(profile.getId());
-        if (profile.getStatus() == UserStatusConstants.INACTIVE && verificationToken.getExpirationTime().isAfter(LocalDateTime.now())) {
-            throw new AccessDeniedException("Tài khoản chưa được xác thực hãy vào mail ấn link để xác thực!");
-        }
+        if (profile.getStatus() == UserStatusConstants.INACTIVE) {
+            VerificationToken verificationToken = verificationTokenRepository.findByProfile_Id(profile.getId());
 
-        if (profile.getStatus() == UserStatusConstants.INACTIVE && LocalDateTime.now().isAfter(verificationToken.getExpirationTime())) {
-            VerificationToken newVerification = garenateNewVerification(verificationToken);
-            resendVerificationMail(profile, applicationUrl(request), verificationToken);
-            throw new AccessDeniedException("Tài khoản chưa được xác thực chúng tôi đã gửi cho bạn một link khác!");
+            if (verificationToken != null && verificationToken.getExpirationTime().isAfter(LocalDateTime.now()))
+                throw new AccessDeniedException("Tài khoản chưa được xác thực hãy vào mail ấn link để xác thực!");
+            if (verificationToken != null && LocalDateTime.now().isAfter(verificationToken.getExpirationTime())) {
+                resendVerificationMail(profile, applicationUrl(request), garenateNewVerification(verificationToken));
+                throw new AccessDeniedException("Tài khoản chưa được xác thực chúng tôi đã gửi cho bạn một link khác!");
+            }
         }
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         CurrentUserUtils.setCurrentUserDetails(authentication);
-        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         return new UserAuthResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getName(), userDetails.getEmail(), userDetails.getImageUrl(), userDetails.getAuthorities().stream().findFirst().get().getAuthority(), userDetails.getStatus());
     }
@@ -162,9 +162,13 @@ public class AuthServiceImpl implements AuthService {
     public VerificationToken garenateNewVerification(VerificationToken verificationToken) {
         verificationToken.setToken(UUID.randomUUID().toString());
         verificationToken.setExpirationTime(LocalDateTime.now().plusMinutes(10L));
-        verificationTokenRepository.save(verificationToken);
-        return verificationToken;
+        return verificationTokenRepository.save(verificationToken);
     }
+
+
+    /*
+     * helper methods
+     * */
 
 
     public void resendVerificationMail(Profile profile, String applicationUrl, VerificationToken verificationToken) {

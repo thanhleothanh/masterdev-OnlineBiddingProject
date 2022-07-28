@@ -13,4 +13,6 @@ public interface AuctionUserRepository extends JpaRepository<AuctionUser, Intege
 
     List<AuctionUser> findByUser_IdAndAuction_Status(Integer id, AuctionStatusConstants status);
 
+    List<AuctionUser> findByAuction_Id(Integer id);
+
 }

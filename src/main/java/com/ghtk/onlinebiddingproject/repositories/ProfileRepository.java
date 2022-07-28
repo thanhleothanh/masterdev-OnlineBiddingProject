@@ -26,7 +26,4 @@ public interface ProfileRepository extends JpaRepository<Profile, Integer>, JpaS
     @Query(value = "INSERT INTO admin(`profile_id`) VALUES (:profileId)", nativeQuery = true)
     @Transactional
     void insertAdmin(@Param("profileId") Integer profileId);
-
-
-
 }

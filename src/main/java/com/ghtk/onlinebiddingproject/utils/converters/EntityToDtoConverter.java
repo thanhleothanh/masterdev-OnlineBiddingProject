@@ -55,6 +55,7 @@ public class EntityToDtoConverter {
         return modelMapper.map(winner, WinnerDto.class);
     }
 
+
     public AuctionPagingResponseDto convertToDto(AuctionPagingResponse auctionPagingResponse) {
         return modelMapper.map(auctionPagingResponse, AuctionPagingResponseDto.class);
     }
@@ -65,6 +66,10 @@ public class EntityToDtoConverter {
 
     public ReportPagingResponseDto convertToDto(ReportPagingResponse reportPagingResponse) {
         return modelMapper.map(reportPagingResponse, ReportPagingResponseDto.class);
+    }
+
+    public NotificationPagingResponseDto convertToDto(NotificationPagingResponse notificationPagingResponse) {
+        return modelMapper.map(notificationPagingResponse, NotificationPagingResponseDto.class);
     }
 
     public List<AuctionDto> convertToListAuctionDto(List<Auction> auctions) {
@@ -95,6 +100,14 @@ public class EntityToDtoConverter {
         List<CategoryDto> listDto = new ArrayList<>();
         for (Category category : categories) {
             listDto.add(modelMapper.map(category, CategoryDto.class));
+        }
+        return listDto;
+    }
+
+    public List<NotificationDto> convertToListNotificationDto(List<Notification> notifications) {
+        List<NotificationDto> listDto = new ArrayList<>();
+        for (Notification notification : notifications) {
+            listDto.add(modelMapper.map(notification, NotificationDto.class));
         }
         return listDto;
     }

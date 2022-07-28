@@ -1,10 +1,11 @@
 package com.ghtk.onlinebiddingproject.models.entities;
 
-import lombok.*;
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -13,24 +14,34 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "notification")
-public class Notification extends BaseEntity{
+public class Notification extends BaseEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "notification_type_name")
-    private String notificationTypeName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id", nullable = true)
+    private Profile profile;
 
-    @ManyToOne
-    private NotificationNotified notificationNotified;
-    @ManyToOne
-    private NotificationNotifier notificationNotifier;
+    @Column(name = "notification_type")
+    private String notificationType;
 
-    public Notification(String notificationTypeName,NotificationNotified notificationNotified,NotificationNotifier notificationNotifier){
-        this.notificationTypeName = notificationTypeName;
-        this.notificationNotified = notificationNotified;
-        this.notificationNotifier = notificationNotifier;
+    @Column(name = "entity_type")
+    private String entityType;
+
+    @OneToMany(mappedBy = "notification", fetch = FetchType.LAZY)
+    private List<NotificationNotified> notificationNotifieds;
+
+    @OneToOne(mappedBy = "notification")
+    private NotificationAuction notificationAuction;
+
+    @OneToOne(mappedBy = "notification")
+    private NotificationReport notificationReport;
+
+    public Notification(Profile profile, String notificationType, String entityType) {
+        this.profile = profile;
+        this.notificationType = notificationType;
+        this.entityType = entityType;
     }
-
 }

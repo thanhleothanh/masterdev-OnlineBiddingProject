@@ -33,6 +33,8 @@ public class BidServiceImpl implements BidService {
     private AuctionRepository auctionRepository;
     @Autowired
     private AuctionUserServiceImpl auctionUserService;
+    @Autowired
+    private NotificationServiceImpl notificationService;
 
     @Override
     public List<Bid> getBidsByAuctionId(Integer auctionId) {
@@ -65,6 +67,8 @@ public class BidServiceImpl implements BidService {
         auction.setHighestPrice(bidDto.getPrice());
         auctionRepository.save(auction);
         auctionUserService.saveInterestedAuction(auctionId);
+        notificationService.saveNewBidAuctionNotification(currentUser.getProfile(), auction);
+
         bid.setUser(currentUser);
         bid.setAuction(auction);
         return bidRepository.save(bid);

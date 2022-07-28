@@ -10,6 +10,7 @@ import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponseDto;
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
 import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
 import com.ghtk.onlinebiddingproject.services.impl.JobSchedulerServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.NotificationServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -33,6 +34,8 @@ import javax.validation.Valid;
 public class AdminAuctionController {
     @Autowired
     private AuctionServiceImpl auctionService;
+    @Autowired
+    private NotificationServiceImpl notificationService;
     @Autowired
     private EntityToDtoConverter entityToDtoConverter;
     @Autowired

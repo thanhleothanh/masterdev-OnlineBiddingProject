@@ -23,8 +23,6 @@ public interface AuctionService {
 
     List<Auction> getAuctionsByUserId(Integer userId);
 
-    List<Auction> getMyInterestedAuctions();
-
     Auction getById(Integer id);
 
     Auction save(AuctionRequestDto auctionDto, Auction auction, Item item);

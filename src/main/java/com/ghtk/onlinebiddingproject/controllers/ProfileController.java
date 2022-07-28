@@ -5,16 +5,15 @@ import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionUserDto;
 import com.ghtk.onlinebiddingproject.models.dtos.ProfileDto;
-import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.requests.UserChangePassword;
 import com.ghtk.onlinebiddingproject.models.requests.UserChangeProfile;
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
-import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.AuctionUserServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.AuthServiceImpl;
-import com.ghtk.onlinebiddingproject.services.impl.ProfileServiceImpl;
+import com.ghtk.onlinebiddingproject.models.responses.NotificationPagingResponse;
+import com.ghtk.onlinebiddingproject.models.responses.NotificationPagingResponseDto;
+import com.ghtk.onlinebiddingproject.services.impl.*;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +33,8 @@ public class ProfileController {
     private AuctionServiceImpl auctionService;
     @Autowired
     private AuctionUserServiceImpl auctionUserService;
+    @Autowired
+    private NotificationServiceImpl notificationService;
     @Autowired
     private EntityToDtoConverter entityToDtoConverter;
 
@@ -65,8 +66,16 @@ public class ProfileController {
     @GetMapping("/myAuctions")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> getMyAuctions(@RequestParam(name = "status", required = false) AuctionStatusConstants status) {
-        List<Auction> auctions = auctionService.getMyAuctions(status);
-        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctions);
+        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctionService.getMyAuctions(status));
+        CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/myNotifications")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
+    public ResponseEntity<CommonResponse> getMyNotifications(@RequestHeader HttpHeaders headers) {
+        NotificationPagingResponse pagingResponse = notificationService.getMyNotifications(headers);
+        NotificationPagingResponseDto dtoResponse = entityToDtoConverter.convertToDto(pagingResponse);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -78,16 +87,8 @@ public class ProfileController {
     @GetMapping("/myInterestedAuctions")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getMyInterestedAuctions() {
-        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctionService.getMyInterestedAuctions());
+        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctionUserService.getMyInterestedAuctions());
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("myInterestedAuctions/{auctionId}")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> getInterestedAuction(@PathVariable(value = "auctionId") Integer auctionId) {
-        boolean interested = auctionUserService.getInterestedAuction(auctionId);
-        CommonResponse response = new CommonResponse(true, "Người dùng đã quan tâm auction này trước đó!", null, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -97,14 +98,6 @@ public class ProfileController {
         auctionUserService.saveInterestedAuction(auctionUserDto.getAuction().getId());
         CommonResponse response = new CommonResponse(true, "Success", null, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("myInterestedAuctions/{auctionId}")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> removeInterestedAuction(@PathVariable(value = "auctionId") Integer auctionId) {
-        auctionUserService.removeInterestedAuction(auctionId);
-        CommonResponse response = new CommonResponse(true, "Success", null, null);
-        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     /*
@@ -119,10 +112,11 @@ public class ProfileController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // auctions related
+
     @GetMapping("/{id}/auctions")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getAuctionsByUserId(@PathVariable(value = "id") Integer id) {
-        profileService.getById(id);
         List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctionService.getAuctionsByUserId(id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -131,7 +125,6 @@ public class ProfileController {
     @GetMapping("/{id}/wonAuctions")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getWonAuctionsByUserId(@PathVariable(value = "id") Integer id) {
-        profileService.getById(id);
         List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctionService.getWonAuctionsByUserId(id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);

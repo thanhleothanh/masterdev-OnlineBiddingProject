@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -20,14 +19,16 @@ public class NotificationNotified {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToMany(mappedBy = "notificationNotified")
-    private List<Notification> notification;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification_id", nullable = false)
+    private Notification notification;
 
-    @ManyToOne
-    @JoinColumn(name = "notified_id", referencedColumnName = "id",nullable = false)
-    private Profile notified;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id", nullable = false)
+    private Profile profile;
 
-    public NotificationNotified(Profile notified){
-        this.notified = notified;
+    public NotificationNotified(Notification notification, Profile profile) {
+        this.notification = notification;
+        this.profile = profile;
     }
 }

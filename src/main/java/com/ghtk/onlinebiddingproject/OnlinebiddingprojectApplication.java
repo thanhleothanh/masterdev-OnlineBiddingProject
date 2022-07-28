@@ -4,9 +4,11 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.BidDto;
+import com.ghtk.onlinebiddingproject.models.dtos.NotificationDto;
 import com.ghtk.onlinebiddingproject.models.dtos.ReportDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.entities.Bid;
+import com.ghtk.onlinebiddingproject.models.entities.Notification;
 import com.ghtk.onlinebiddingproject.models.entities.Report;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -34,9 +36,15 @@ public class OnlinebiddingprojectApplication {
                 map().setCreatedAt(String.valueOf(source.getCreatedAt()));
             }
         };
+        PropertyMap<Notification, NotificationDto> localDateTimeToStringNotification = new PropertyMap<Notification, NotificationDto>() {
+            protected void configure() {
+                map().setUpdatedAt(String.valueOf(source.getUpdatedAt()));
+            }
+        };
         modelMapper.addMappings(localDateTimeToStringBid);
         modelMapper.addMappings(localDateTimeToStringReport);
         modelMapper.addMappings(localDateTimeToStringAuction);
+        modelMapper.addMappings(localDateTimeToStringNotification);
         return modelMapper;
     }
 

@@ -19,11 +19,11 @@ public class NotificationAuction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "notification_id", referencedColumnName = "id",nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification_id", nullable = false)
     private Notification notification;
 
-    @OneToOne
-    @JoinColumn(name = "auction_id", referencedColumnName = "user_id",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 }

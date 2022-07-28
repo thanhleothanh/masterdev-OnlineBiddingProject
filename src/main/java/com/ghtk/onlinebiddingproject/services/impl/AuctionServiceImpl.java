@@ -10,7 +10,6 @@ import com.ghtk.onlinebiddingproject.models.requests.AuctionRequestDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.repositories.AuctionRepository;
-import com.ghtk.onlinebiddingproject.repositories.AuctionUserRepository;
 import com.ghtk.onlinebiddingproject.repositories.ReviewResultRepository;
 import com.ghtk.onlinebiddingproject.repositories.WinnerRepository;
 import com.ghtk.onlinebiddingproject.security.UserDetailsImpl;
@@ -39,15 +38,15 @@ public class AuctionServiceImpl implements AuctionService {
     @Autowired
     private AuctionRepository auctionRepository;
     @Autowired
-    private AuctionUserRepository auctionUserRepository;
-    @Autowired
     private WinnerRepository winnerRepository;
+    @Autowired
+    private ReviewResultRepository reviewResultRepository;
     @Autowired
     private ItemServiceImpl itemService;
     @Autowired
-    private AuctionDao auctionDao;
+    private NotificationServiceImpl notificationService;
     @Autowired
-    private ReviewResultRepository reviewResultRepository;
+    private AuctionDao auctionDao;
 
     @Override
     public AuctionPagingResponse get(Specification<Auction> spec, HttpHeaders headers, Sort sort) {
@@ -81,13 +80,6 @@ public class AuctionServiceImpl implements AuctionService {
     @Override
     public List<Auction> getAuctionsByUserId(Integer userId) {
         return auctionRepository.findByUser_IdAndStatusNotIn(userId, List.of(AuctionStatusConstants.DRAFT, AuctionStatusConstants.PENDING), Sort.by(Sort.Direction.DESC, "createdAt"));
-    }
-
-    @Override
-    public List<Auction> getMyInterestedAuctions() {
-        UserDetailsImpl userDetails = CurrentUserUtils.getCurrentUserDetails();
-        List<AuctionUser> auctionUsers = auctionUserRepository.findByUser_IdAndAuction_Status(userDetails.getId(), AuctionStatusConstants.OPENING);
-        return auctionUsers.stream().map(AuctionUser::getAuction).collect(Collectors.toList());
     }
 
     @Override
@@ -233,12 +225,13 @@ public class AuctionServiceImpl implements AuctionService {
                 reviewResult = new ReviewResult(ReviewResultConstants.ACCEPTED, auction, admin);
             else if (newStatus.equals(AuctionStatusConstants.CANCELED))
                 reviewResult = new ReviewResult(ReviewResultConstants.REJECTED, auction, admin);
+            else throw new BadRequestException("Duyệt bài đấu giá không thành công!");
+            reviewResultRepository.save(reviewResult);
+            auction.setStatus(newStatus);
 
-            if (reviewResult != null) {
-                reviewResultRepository.save(reviewResult);
-                auction.setStatus(newStatus);
-                return auctionRepository.save(auction);
-            } else throw new BadRequestException("Duyệt bài đấu giá không thành công!");
+            Auction reviewedAuction = auctionRepository.save(auction);
+            notificationService.createReviewAuctionNotification(new Profile(userDetails.getId()), reviewedAuction);
+            return reviewedAuction;
         }
         throw new BadRequestException("Chưa thể duyệt bài đấu giá này vào lúc này!");
     }

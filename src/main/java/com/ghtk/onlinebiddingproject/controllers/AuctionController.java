@@ -36,11 +36,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-/*
- * @PreAuthorize để kiểm tra role user trong cookie, nếu không có cookie đăng nhập từ trước thì throw, nếu có role đúng thì mới cho access controller path này
- * có thể dùng @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')") nếu muốn hoặc admin hoặc user có thể access
- * */
-
 @RestController
 @RequestMapping(path = "api/v1/auctions")
 public class AuctionController {
@@ -80,7 +75,6 @@ public class AuctionController {
             Sort sort,
             @RequestHeader HttpHeaders headers) {
         AuctionPagingResponse pagingResponse = auctionService.get(spec, headers, Sort.by(Sort.Direction.DESC, "createdAt"));
-
         AuctionPagingResponseDto dtoResponse = entityToDtoConverter.convertToDto(pagingResponse);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpHeadersUtils.returnHttpHeaders(pagingResponse), HttpStatus.OK);

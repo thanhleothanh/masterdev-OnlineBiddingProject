@@ -1,24 +1,19 @@
 package com.ghtk.onlinebiddingproject.constants;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public enum NotificationTypeConstants {
-    ACCEPT_AUCTION("duyệt bài đấu giá","AUCTION"),
-    OPEN_AUCTION("mở bài đấu giá","AUCTION"),
-    END_AUCTION("kết thúc đấu giá","AUCTION"),
-    HIGHER_PRICE_AUCTION("trả giá cao hơn khi đấu giá", "AUCTION"),
-    CREATE_REPORT("tạo bài báo cáo","REPORT"),
-    ACCEPT_REPORT("duyệt báo cáo", "REPORT"),
-    REJECT_REPORT("từ chối báo cáo","REPORT");
+    REVIEW_AUCTION("REVIEW_AUCTION", "AUCTION"),
+    START_AUCTION("START_AUCTION", "AUCTION"),
+    END_AUCTION("END_AUCTION", "AUCTION"),
+    NEW_BID_AUCTION("NEW_BID_AUCTION", "AUCTION"),
+    CREATE_REPORT("CREATE_REPORT", "REPORT"),
+    JUDGE_REPORT("JUDGE_REPORT", "REPORT");
 
-
-    private final String description;
+    private final String notificationType;
     private final String entityType;
-    private NotificationTypeConstants(String description,String entityType){
-        this.description = description;
-        this.entityType = entityType;
-    }
-
 }
