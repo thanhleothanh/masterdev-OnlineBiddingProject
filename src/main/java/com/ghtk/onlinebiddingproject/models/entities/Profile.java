@@ -54,4 +54,8 @@ public class Profile extends BaseEntity {
         this.name = name;
         this.role = role;
     }
+
+    public Profile(Integer id) {
+        this.id = id;
+    }
 }

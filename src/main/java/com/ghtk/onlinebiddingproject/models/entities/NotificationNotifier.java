@@ -23,6 +23,11 @@ public class NotificationNotifier {
     @OneToMany(mappedBy = "notificationNotifier")
     private List<Notification> notification;
 
-    @Column(name = "notifier_id")
-    private Integer notifierId;
+    @OneToOne
+    @JoinColumn(name = "notifier_id",referencedColumnName = "id", nullable = false)
+    private Profile notifier;
+
+    public NotificationNotifier(Profile notifier){
+        this.notifier = notifier;
+    }
 }

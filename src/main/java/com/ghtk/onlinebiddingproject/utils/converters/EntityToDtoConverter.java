@@ -52,6 +52,10 @@ public class EntityToDtoConverter {
         return modelMapper.map(profile, ProfileDto.class);
     }
 
+    public NotificationDTO convertToDto(Notification notification) {
+        return modelMapper.map(notification, NotificationDTO.class);
+    }
+
     public AuctionPagingResponseDto convertToDto(AuctionPagingResponse auctionPagingResponse) {
         return modelMapper.map(auctionPagingResponse, AuctionPagingResponseDto.class);
     }

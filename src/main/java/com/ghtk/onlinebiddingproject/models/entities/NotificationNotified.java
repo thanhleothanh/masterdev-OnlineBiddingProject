@@ -25,5 +25,9 @@ public class NotificationNotified {
 
     @ManyToOne
     @JoinColumn(name = "notified_id", referencedColumnName = "id",nullable = false)
-    private Profile profile;
+    private Profile notified;
+
+    public NotificationNotified(Profile notified){
+        this.notified = notified;
+    }
 }

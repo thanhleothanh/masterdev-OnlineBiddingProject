@@ -13,22 +13,24 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "notification")
-public class Notification {
+public class Notification extends BaseEntity{
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "notification_type_id", referencedColumnName = "id", nullable = false)
-    private NotificationType notificationType;
-
-    @Column(name = "create_on")
-    private LocalDateTime createOn;
+    @Column(name = "notification_type_name")
+    private String notificationTypeName;
 
     @ManyToOne
     private NotificationNotified notificationNotified;
     @ManyToOne
     private NotificationNotifier notificationNotifier;
+
+    public Notification(String notificationTypeName,NotificationNotified notificationNotified,NotificationNotifier notificationNotifier){
+        this.notificationTypeName = notificationTypeName;
+        this.notificationNotified = notificationNotified;
+        this.notificationNotifier = notificationNotifier;
+    }
 
 }
