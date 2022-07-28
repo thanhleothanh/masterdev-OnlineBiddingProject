@@ -41,6 +41,4 @@ public class Report extends BaseEntity {
 
     @OneToOne(mappedBy = "report")
     private ReportResult reportResult;
-
-
 }

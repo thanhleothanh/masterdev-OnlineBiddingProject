@@ -20,7 +20,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "api/v1/items")
 public class ItemController {
-
     @Autowired
     private ItemServiceImpl itemService;
     @Autowired
@@ -32,7 +31,6 @@ public class ItemController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> save(@Valid @RequestBody ItemRequestDto itemDto) {
         Item item = dtoToEntityConverter.convertToEntity(itemDto);
-
         ItemDto dtoResponse = entityToDtoConverter.convertToDto(itemService.save(item));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -41,9 +39,7 @@ public class ItemController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> put(@PathVariable("id") int id, @Valid @RequestBody ItemRequestDto itemDto) {
-        Item item = itemService.getById(id);
-
-        ItemDto dtoResponse = entityToDtoConverter.convertToDto(itemService.put(itemDto, item));
+        ItemDto dtoResponse = entityToDtoConverter.convertToDto(itemService.put(itemDto, id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -52,7 +48,6 @@ public class ItemController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> saveItemImage(@PathVariable Integer id, @Valid @RequestBody ItemImageDto itemImageDto) {
         ItemImage itemImage = dtoToEntityConverter.convertToEntity(itemImageDto);
-
         ItemImageDto dtoResponse = entityToDtoConverter.convertToDto(itemService.saveItemImage(id, itemImage));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

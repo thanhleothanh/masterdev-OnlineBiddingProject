@@ -48,6 +48,14 @@ public interface AuctionRepository extends JpaRepository<Auction, Integer>, JpaS
             , nativeQuery = true)
     void insertWinner(Integer auctionId);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE auction" +
+            "           SET status = 5" +
+            "           WHERE auction.id = :auctionId ;", nativeQuery = true)
+    void confirmAuction(Integer auctionId);
+
+
     /*
      * Timer Events
      * deprecated

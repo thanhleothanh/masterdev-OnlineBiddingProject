@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 public class CancelAuctionJob extends QuartzJobBean {
     @Autowired
     private AuctionRepository auctionRepository;
-    @Autowired
-    private Scheduler scheduler;
 
     @Override
     protected void executeInternal(@NotNull JobExecutionContext context) throws JobExecutionException {

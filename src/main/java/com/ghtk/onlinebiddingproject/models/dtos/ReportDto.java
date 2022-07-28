@@ -1,6 +1,5 @@
 package com.ghtk.onlinebiddingproject.models.dtos;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,10 +23,11 @@ public class ReportDto {
     @NotNull(message = "thiếu thông tin người bị báo cáo!")
     private UserDto userReported;
 
-    @JsonIgnore
-    private AuctionDto auction;
+//    private AuctionDto auction;
 
     private ReportResultDto reportResult;
 
     private List<ReportImageDto> reportImages;
+
+    private String createdAt;
 }

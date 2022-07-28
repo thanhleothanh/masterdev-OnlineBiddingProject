@@ -1,6 +1,5 @@
 package com.ghtk.onlinebiddingproject.controllers;
 
-import com.ghtk.onlinebiddingproject.constants.AuctionStatusConstants;
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.BidDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
@@ -12,7 +11,10 @@ import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponse;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionPagingResponseDto;
 import com.ghtk.onlinebiddingproject.models.responses.AuctionTopTrendingDto;
 import com.ghtk.onlinebiddingproject.models.responses.CommonResponse;
-import com.ghtk.onlinebiddingproject.services.impl.*;
+import com.ghtk.onlinebiddingproject.services.impl.AuctionServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.BidServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.JobSchedulerServiceImpl;
+import com.ghtk.onlinebiddingproject.services.impl.WebSocketServiceImpl;
 import com.ghtk.onlinebiddingproject.utils.HttpHeadersUtils;
 import com.ghtk.onlinebiddingproject.utils.converters.DtoToEntityConverter;
 import com.ghtk.onlinebiddingproject.utils.converters.EntityToDtoConverter;
@@ -47,8 +49,6 @@ public class AuctionController {
     @Autowired
     private AuctionServiceImpl auctionService;
     @Autowired
-    private AuctionUserServiceImpl auctionUserService;
-    @Autowired
     private BidServiceImpl bidService;
     @Autowired
     private DtoToEntityConverter dtoToEntityConverter;
@@ -64,7 +64,6 @@ public class AuctionController {
      * có thể sort theo price, time
      * phân trang
      * */
-
     @GetMapping("")
     public ResponseEntity<CommonResponse> get(
             @Join(path = "category", alias = "c")
@@ -81,36 +80,30 @@ public class AuctionController {
             Sort sort,
             @RequestHeader HttpHeaders headers) {
         AuctionPagingResponse pagingResponse = auctionService.get(spec, headers, Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<AuctionDto> auctionDto = entityToDtoConverter.convertToListAuctionDto(pagingResponse.getAuctions());
 
         AuctionPagingResponseDto dtoResponse = entityToDtoConverter.convertToDto(pagingResponse);
-        dtoResponse.setAuctions(auctionDto);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpHeadersUtils.returnHttpHeaders(pagingResponse), HttpStatus.OK);
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<CommonResponse> save(@Valid @RequestBody AuctionRequestDto auctionDto) {
+        Auction auction = dtoToEntityConverter.convertToEntity(auctionDto);
+        Item item = dtoToEntityConverter.convertToEntity(auctionDto.getItem());
+
+        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.save(auctionDto, auction, item));
+        CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/topTrending")
     public ResponseEntity<CommonResponse> getTopTrending() {
         List<AuctionTopTrendingDto> auctionsDto = auctionService.getTopTrending();
-
         CommonResponse response = new CommonResponse(true, "Success", auctionsDto, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /*
-     * Get auctions api cho current user
-     * có thể lọc theo status
-     * */
-
-    @GetMapping("/myAuctions")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> getMyAuctions(@RequestParam(name = "status", required = false) AuctionStatusConstants status) {
-        List<Auction> auctions = auctionService.getMyAuctions(status);
-
-        List<AuctionDto> dtoResponse = entityToDtoConverter.convertToListAuctionDto(auctions);
-        CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
@@ -120,24 +113,10 @@ public class AuctionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> save(@Valid @RequestBody AuctionRequestDto auctionDto) {
-        Auction auction = dtoToEntityConverter.convertToEntity(auctionDto);
-        Item item = dtoToEntityConverter.convertToEntity(auctionDto.getItem());
-        Auction newAuction = auctionService.save(auctionDto, auction, item);
-
-        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(newAuction);
-        CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> put(@PathVariable("id") int id, @Valid @RequestBody AuctionRequestDto auctionDto) {
-        Auction auction = auctionService.getById(id);
-
-        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.put(auctionDto, auction));
+        AuctionDto dtoResponse = entityToDtoConverter.convertToDto(auctionService.put(auctionDto, id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -145,10 +124,8 @@ public class AuctionController {
     @PutMapping("/{id}/submit")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> submitPending(@PathVariable("id") int id) {
-        Auction auction = auctionService.getById(id);
-        Auction submittedAuction = auctionService.submitPending(auction);
+        Auction submittedAuction = auctionService.submitPending(id);
         jobSchedulerService.cancelAuctionScheduler(submittedAuction); //scheduling a job to automatically cancel auction if no admin approve when timeStart comes!
-
         AuctionDto dtoResponse = entityToDtoConverter.convertToDto(submittedAuction);
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -169,9 +146,7 @@ public class AuctionController {
     @GetMapping("/{id}/bids")
     @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<CommonResponse> getBidsByAuctionId(@PathVariable(value = "id") Integer id) {
-        auctionService.getById(id);
-        List<Bid> bids = bidService.getBidsByAuctionId(id);
-        List<BidDto> dtoResponse = entityToDtoConverter.convertToListBidDto(bids);
+        List<BidDto> dtoResponse = entityToDtoConverter.convertToListBidDto(bidService.getBidsByAuctionId(id));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -182,29 +157,8 @@ public class AuctionController {
         Bid bid = dtoToEntityConverter.convertToEntity(bidDto);
         BidDto dtoResponse = entityToDtoConverter.convertToBidDto(bidService.saveBid(id, bidDto, bid));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
-        webSocketService.sendBid(id, response);
+        webSocketService.sendBid(id, response); // send new saved bid to all listeners at topic/auctions/${auctionId}/bids
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    /*
-     * Interested Users
-     * */
-
-    @PostMapping("/{id}/interested")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> saveInterestedUser(@PathVariable(value = "id") Integer id) {
-
-        auctionUserService.saveInterestUser(id);
-        CommonResponse response = new CommonResponse(true, "Success", null, null);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    @DeleteMapping("/{id}/interested")
-    @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<CommonResponse> removeInterestedUser(@PathVariable(value = "id") Integer id) {
-
-        auctionUserService.removeInterestUser(id);
-        CommonResponse response = new CommonResponse(true, "Success", null, null);
-        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-    }
 }

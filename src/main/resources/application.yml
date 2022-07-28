@@ -1,0 +1,8 @@
+mailServer:
+  host: smtp.gmail.com
+  port: 587
+  email: namnguyen2200022@gmail.com
+  password: tbtyrtkutlfdppbk
+  protocol: smtp
+  isSSL: false
+

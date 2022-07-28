@@ -30,7 +30,6 @@ public class ReportController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> save(@Valid @RequestBody ReportDto reportDto) {
         Report report = dtoToEntityConverter.convertToEntity(reportDto);
-
         ReportDto dtoResponse = entityToDtoConverter.convertToDto(reportService.save(report));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -40,7 +39,6 @@ public class ReportController {
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<CommonResponse> postReportImage(@PathVariable Integer id, @Valid @RequestBody ReportImageDto reportImageDto) {
         ReportImage reportImage = dtoToEntityConverter.convertToEntity(reportImageDto);
-
         ReportImageDto dtoResponse = entityToDtoConverter.convertToDto(reportService.saveReportImage(id, reportImage));
         CommonResponse response = new CommonResponse(true, "Success", dtoResponse, null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

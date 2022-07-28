@@ -34,8 +34,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/webjars/**",
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
             // other public endpoints of your API may be appended to this array
+            "/api/v1/auctions",
+            "/api/v1/auctions/topTrending",
+            "/api/v1/auth/**",
+            "/ws/**",
     };
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
@@ -70,10 +74,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers("/api/v1/auctions", "/api/v1/auctions/topTrending").permitAll()
-                .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/ws/**").permitAll()
-                .antMatchers("/swagger-ui").permitAll()
                 .antMatchers("/api/v1/**").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

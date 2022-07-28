@@ -6,7 +6,6 @@ public interface JobSchedulerService {
     /*
      * Quartz
      * */
-
     void startAuctionScheduler(Auction auction);
 
     void endAuctionScheduler(Auction auction);

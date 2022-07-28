@@ -18,5 +18,6 @@ public class BidDto {
     private Double price;
 
     private UserDto user;
+
     private String createdAt;
 }

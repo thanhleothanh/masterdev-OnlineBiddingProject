@@ -4,8 +4,10 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ghtk.onlinebiddingproject.models.dtos.AuctionDto;
 import com.ghtk.onlinebiddingproject.models.dtos.BidDto;
+import com.ghtk.onlinebiddingproject.models.dtos.ReportDto;
 import com.ghtk.onlinebiddingproject.models.entities.Auction;
 import com.ghtk.onlinebiddingproject.models.entities.Bid;
+import com.ghtk.onlinebiddingproject.models.entities.Report;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.boot.SpringApplication;
@@ -22,12 +24,18 @@ public class OnlinebiddingprojectApplication {
                 map().setCreatedAt(String.valueOf(source.getCreatedAt()));
             }
         };
+        PropertyMap<Report, ReportDto> localDateTimeToStringReport = new PropertyMap<Report, ReportDto>() {
+            protected void configure() {
+                map().setCreatedAt(String.valueOf(source.getCreatedAt()));
+            }
+        };
         PropertyMap<Auction, AuctionDto> localDateTimeToStringAuction = new PropertyMap<Auction, AuctionDto>() {
             protected void configure() {
                 map().setCreatedAt(String.valueOf(source.getCreatedAt()));
             }
         };
         modelMapper.addMappings(localDateTimeToStringBid);
+        modelMapper.addMappings(localDateTimeToStringReport);
         modelMapper.addMappings(localDateTimeToStringAuction);
         return modelMapper;
     }

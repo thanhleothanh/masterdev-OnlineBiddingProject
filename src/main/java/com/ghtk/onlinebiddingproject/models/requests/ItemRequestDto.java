@@ -13,13 +13,13 @@ public class ItemRequestDto {
 
     private Integer id;
 
-    @Size(max = 200, message = "tên sản phẩm không được quá 200 ký tự!")
+    @Size(max = 200, message = "Tên sản phẩm không được quá 200 ký tự!")
     private String name;
 
-    @Size(max = 1000, message = "mô tả sản phẩm không được quá 200 ký tự!")
+    @Size(max = 1000, message = "Mô tả sản phẩm không được quá 200 ký tự!")
     private String description;
 
-    @Positive(message = "số lượng sản phẩm không được nhỏ hơn hoặc bằng 0!")
+    @Positive(message = "Số lượng sản phẩm không được nhỏ hơn hoặc bằng 0!")
     private Integer amount;
 
     private Auction auction;
